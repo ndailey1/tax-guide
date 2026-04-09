@@ -194,8 +194,20 @@ export default function TaxGuide() {
         <AnalysisScreen
           profile={profile}
           filingStatus={filingStatus}
-          onContinueToGuide={() => {
-            setTopics(buildTopics(level!, filingStatus!, situations));
+          onContinueToGuide={() => setScreen("action_plan")}
+        />
+      )}
+
+      {screen === "action_plan" && filingStatus && level && (
+        <ActionPlanScreen
+          profile={profile}
+          filingStatus={filingStatus}
+          situations={situations}
+          level={level}
+          onLearnMore={() => {
+            if (topics.length === 0) {
+              setTopics(buildTopics(level!, filingStatus!, situations));
+            }
             setScreen("topics");
           }}
         />
@@ -207,7 +219,7 @@ export default function TaxGuide() {
           completed={completed}
           filingStatus={filingStatus}
           onSelect={handleSelectTopic}
-          onViewActionPlan={() => setScreen("action_plan")}
+          onBack={() => setScreen("action_plan")}
         />
       )}
 
@@ -223,15 +235,6 @@ export default function TaxGuide() {
           followUpAnswer={followUpStream.content}
           followUpLoading={followUpStream.loading}
           onDone={handleDone}
-        />
-      )}
-
-      {screen === "action_plan" && filingStatus && level && (
-        <ActionPlanScreen
-          profile={profile}
-          filingStatus={filingStatus}
-          situations={situations}
-          level={level}
         />
       )}
     </div>

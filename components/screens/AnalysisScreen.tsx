@@ -371,7 +371,7 @@ export function AnalysisScreen({
         onClick={onContinueToGuide}
         className="w-full py-3.5 rounded-lg border-none bg-tax-accent text-white text-sm font-bold font-sans cursor-pointer"
       >
-        Learn More About Each Topic &rarr;
+        Show Me Exactly What To Do &rarr;
       </button>
     </div>
   );

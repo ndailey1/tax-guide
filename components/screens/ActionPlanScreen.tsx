@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import type { FinancialProfile } from "@/lib/financial-profile";
-import { calculateTax, type TaxCalculation } from "@/lib/financial-profile";
+import { calculateTax } from "@/lib/financial-profile";
 import { TAX_DATA, fmtD } from "@/lib/tax-data";
 
 interface ActionPlanScreenProps {
@@ -10,105 +10,190 @@ interface ActionPlanScreenProps {
   filingStatus: string;
   situations: string[];
   level: string;
+  onLearnMore: () => void;
 }
 
-interface Action {
-  emoji: string;
+interface Step {
   title: string;
-  detail: string;
-  priority: "now" | "soon" | "next_year";
-  category: "file" | "save" | "plan" | "protect";
+  why: string;
+  instructions: string[];
+  links?: { label: string; url: string }[];
+  tip?: string;
+  warning?: string;
 }
 
-function buildActions(
-  calc: TaxCalculation,
+function buildSteps(
   profile: FinancialProfile,
   filingStatus: string,
   situations: string[],
-): Action[] {
-  const actions: Action[] = [];
+  level: string,
+): Step[] {
+  const calc = calculateTax(profile, filingStatus);
   const s = new Set(situations);
   const d = TAX_DATA.deductions;
+  const steps: Step[] = [];
 
-  // ============================================
-  // FILING ACTIONS (do now)
-  // ============================================
+  // =====================
+  // STEP 1: GATHER DOCUMENTS
+  // =====================
+  const docs: string[] = [];
+  docs.push("Your Social Security Number (SSN) \u2014 the 9-digit number on your Social Security card");
+  docs.push("A government-issued photo ID (driver's license or passport)");
+  docs.push("Your bank account number and routing number \u2014 for direct deposit of your refund (check your banking app or the bottom of a check)");
+  if (s.has("employed_w2")) {
+    docs.push("W-2 form(s) from every employer \u2014 your employer mails or emails this to you by January 31. Check your payroll portal (ADP, Gusto, Workday) if you can't find it");
+  }
+  if (s.has("self_employed") || s.has("side_hustle")) {
+    docs.push("1099-NEC or 1099-K forms from clients and gig platforms \u2014 check each app's tax documents section");
+    docs.push("Records of all business expenses \u2014 bank/credit card statements showing business purchases");
+  }
+  if (s.has("investor")) {
+    docs.push("1099-B, 1099-DIV, and 1099-INT from your brokerage \u2014 check the Tax Documents section of your investment app (Robinhood, Fidelity, Coinbase, etc.)");
+  }
+  if (s.has("homeowner")) {
+    docs.push("Form 1098 from your mortgage company \u2014 shows mortgage interest paid. Check your lender's website under Tax Documents");
+  }
+  if (s.has("student") || s.has("student_loans")) {
+    docs.push("Form 1098-T (tuition) and/or 1098-E (student loan interest) \u2014 check your school's student portal and your loan servicer's website");
+  }
+  if (s.has("retirement_income")) {
+    docs.push("SSA-1099 (Social Security) and/or 1099-R (retirement withdrawals) \u2014 check ssa.gov and your retirement account portal");
+  }
+  if (s.has("unemployed")) {
+    docs.push("Form 1099-G from your state unemployment agency \u2014 log into the same unemployment website where you filed your claim");
+  }
+  if (s.has("charity")) {
+    docs.push("Receipts or acknowledgment letters from charities you donated to");
+  }
+  if (s.has("medical")) {
+    docs.push("Records of medical expenses \u2014 check your health insurance portal for a claims summary");
+  }
+  if (s.has("childcare")) {
+    docs.push("Childcare provider's name, address, and tax ID, plus total amount you paid");
+  }
 
-  // Standard vs itemized recommendation
-  if (calc.useItemized) {
-    actions.push({
-      emoji: "\uD83D\uDCCB",
-      title: "Itemize your deductions",
-      detail: `Your itemized deductions (${fmtD(Math.round(calc.itemizedTotal))}) beat the standard deduction (${fmtD(calc.standardDeduction)}) by ${fmtD(Math.round(calc.itemizedTotal - calc.standardDeduction))}. Make sure you have receipts and documentation for all deductions you're claiming.`,
-      priority: "now",
-      category: "file",
-    });
+  steps.push({
+    title: "Gather your documents",
+    why: "Before you can do anything, you need the paperwork. Most of these are sent to you automatically \u2014 check your email, mail, and the apps/websites listed below.",
+    instructions: docs,
+    tip: "Create a folder (physical or digital) and put everything in one place as you collect it. You'll need all of this whether you file yourself or use a professional.",
+  });
+
+  // =====================
+  // STEP 2: DECIDE HOW TO FILE
+  // =====================
+  const isComplex = s.has("self_employed") || s.has("side_hustle") || s.has("rental_income") || (s.has("investor") && (profile.investmentIncomeLTCG ?? 0) + (profile.investmentIncomeSTCG ?? 0) > 5000);
+
+  const filingInstructions: string[] = [];
+  const filingLinks: { label: string; url: string }[] = [];
+
+  if (isComplex) {
+    filingInstructions.push(
+      "Your situation is more complex (self-employment, investments, or rental income). A tax professional can help you maximize deductions and avoid mistakes",
+      "Find a CPA or Enrolled Agent near you \u2014 ask friends/family for recommendations, or search online. Expect to pay $200\u2013$500 for a return like yours",
+      "If you prefer to do it yourself, use tax software like TurboTax, H&R Block, or FreeTaxUSA \u2014 they walk you through everything with interview-style questions",
+      "Whichever you choose, bring ALL the documents from Step 1",
+    );
+    filingLinks.push(
+      { label: "Find a CPA near you", url: "https://www.aicpa-cima.com/resources/find-a-cpa" },
+      { label: "FreeTaxUSA (cheapest DIY for complex returns)", url: "https://www.freetaxusa.com" },
+    );
   } else {
-    actions.push({
-      emoji: "\u2705",
-      title: "Take the standard deduction",
-      detail: `The standard deduction (${fmtD(calc.standardDeduction)}) saves you more than itemizing${calc.itemizedTotal > 0 ? ` (your itemized total is only ${fmtD(Math.round(calc.itemizedTotal))})` : ""}. You don't need to track individual deduction receipts for your federal return.`,
-      priority: "now",
-      category: "file",
-    });
+    filingInstructions.push(
+      "Your situation is straightforward \u2014 you can file for FREE without paying anyone",
+      "Go to IRS Free File \u2014 it's the IRS's official program with free tax software. If your income is under $84,000, you qualify",
+      "Another good free option: Cash App Taxes (formerly Credit Karma Tax) is always free regardless of income",
+      "These programs ask you simple questions and fill out the forms for you. It's like a guided interview \u2014 no tax knowledge needed",
+      "Have your documents from Step 1 ready. The software will tell you exactly which numbers to enter from each form",
+    );
+    filingLinks.push(
+      { label: "IRS Free File \u2014 Official free filing", url: "https://www.irs.gov/filing/free-file-do-your-federal-taxes-for-free" },
+      { label: "Cash App Taxes \u2014 Always free", url: "https://cash.app/taxes" },
+    );
   }
 
-  // Refund or owed
-  if (calc.totalWithholding > 0) {
-    if (calc.estimatedRefundOrOwed >= 0) {
-      actions.push({
-        emoji: "\uD83D\uDCB0",
-        title: `File your return to claim your ~${fmtD(Math.round(calc.estimatedRefundOrOwed))} refund`,
-        detail: `Your employer sent ${fmtD(Math.round(calc.totalWithholding))} to the IRS, but you only owe ~${fmtD(Math.round(calc.taxAfterCredits))}. File your return to get the difference back. The sooner you file, the sooner you get paid. Choose direct deposit for the fastest refund (usually 2-3 weeks with e-filing).`,
-        priority: "now",
-        category: "file",
-      });
-    } else {
-      actions.push({
-        emoji: "\u26A0\uFE0F",
-        title: `You may owe ~${fmtD(Math.abs(Math.round(calc.estimatedRefundOrOwed)))} — file by ${TAX_DATA.filingDeadline}`,
-        detail: `Your withholding of ${fmtD(Math.round(calc.totalWithholding))} didn't fully cover your ~${fmtD(Math.round(calc.taxAfterCredits))} tax bill. File and pay by ${TAX_DATA.filingDeadline} to avoid penalties. If you can't pay in full, file anyway — the failure-to-file penalty (5%/month) is 10x worse than failure-to-pay (0.5%/month). The IRS offers payment plans.`,
-        priority: "now",
-        category: "file",
-      });
-    }
-  }
-
-  // Filing deadline
-  actions.push({
-    emoji: "\uD83D\uDCC5",
-    title: `File by ${TAX_DATA.filingDeadline}`,
-    detail: `This is the deadline to file your ${TAX_DATA.year} federal return. If you need more time, you can file for a free automatic extension by this date — but that only extends the time to file, NOT the time to pay. Any tax owed is still due ${TAX_DATA.filingDeadline}.`,
-    priority: "now",
-    category: "file",
+  steps.push({
+    title: "Choose how you'll file",
+    why: isComplex
+      ? "With self-employment or investment income, a professional or good software will catch deductions you'd miss on your own. They often pay for themselves."
+      : "You don't need to pay anyone. Free software walks you through the whole process step by step.",
+    instructions: filingInstructions,
+    links: filingLinks,
   });
 
-  // How to file
-  const beg = s.has("self_employed") || s.has("side_hustle") || s.has("rental_income") || s.has("investor");
-  actions.push({
-    emoji: "\uD83D\uDCBB",
-    title: beg ? "Consider using a CPA or tax professional" : "File for free using IRS Free File or similar",
-    detail: beg
-      ? `With self-employment, investment, or rental income, a tax professional can help you maximize deductions and avoid mistakes. Expect to pay $200-$500 for a basic return. The deductions they find often pay for themselves.`
-      : `If your income is under $84,000, you can use IRS Free File (irs.gov/freefile) for free federal filing. Free options also include Cash App Taxes (always free) and many states offer free filing through their tax websites. TurboTax and H&R Block also have free tiers for simple returns.`,
-    priority: "now",
-    category: "file",
+  // =====================
+  // STEP 3: FILE YOUR FEDERAL RETURN
+  // =====================
+  const federalInstructions: string[] = [
+    "Open the filing tool you chose in Step 2 and create an account (or sign in)",
+    "Enter your personal info: name, SSN, date of birth, address",
+  ];
+  if (s.has("employed_w2")) {
+    federalInstructions.push("Enter the numbers from your W-2(s) \u2014 the software will tell you exactly which boxes to enter (Box 1 for wages, Box 2 for taxes withheld, etc.)");
+  }
+  if (s.has("self_employed") || s.has("side_hustle")) {
+    federalInstructions.push("Enter your self-employment income from your 1099 forms and your business expenses");
+  }
+  if (s.has("investor")) {
+    federalInstructions.push("Enter your investment info from 1099-B/DIV/INT forms \u2014 many brokerages let you import this automatically");
+  }
+
+  // Deduction guidance
+  if (calc.useItemized) {
+    federalInstructions.push(
+      `When asked about deductions, choose "itemize" \u2014 your deductions (${fmtD(Math.round(calc.itemizedTotal))}) save you more than the standard deduction (${fmtD(calc.standardDeduction)})`
+    );
+  } else {
+    federalInstructions.push(
+      `When asked about deductions, choose the "standard deduction" (${fmtD(calc.standardDeduction)}) \u2014 it's the bigger savings for you. The software usually recommends this automatically`
+    );
+  }
+
+  if ((profile.childrenUnder17 ?? 0) > 0 || (profile.otherDependents ?? 0) > 0) {
+    federalInstructions.push("Enter your dependents' info (name, SSN, date of birth, relationship) \u2014 the software will calculate your credits automatically");
+  }
+
+  federalInstructions.push(
+    "Enter your bank account info for direct deposit \u2014 this is the fastest way to get your refund (usually 2\u20133 weeks)",
+    "Review everything carefully, then e-file (submit electronically). You'll get a confirmation email"
+  );
+
+  const refundNote = calc.totalWithholding > 0
+    ? calc.estimatedRefundOrOwed >= 0
+      ? `Based on what you entered, you should get approximately ${fmtD(Math.round(calc.estimatedRefundOrOwed))} back. This is because your employer sent ${fmtD(Math.round(calc.totalWithholding))} to the IRS, but you only owe about ${fmtD(Math.round(calc.taxAfterCredits))}.`
+      : `Based on what you entered, you may owe about ${fmtD(Math.abs(Math.round(calc.estimatedRefundOrOwed)))}. The software will tell you how to pay (usually online at irs.gov/payments or by bank transfer).`
+    : undefined;
+
+  steps.push({
+    title: "File your federal tax return",
+    why: "This is the main event. The software walks you through it \u2014 you're basically answering questions and typing numbers from your documents.",
+    instructions: federalInstructions,
+    tip: refundNote,
+    links: [
+      { label: "IRS Where's My Refund \u2014 Track your refund status", url: "https://www.irs.gov/refunds" },
+    ],
   });
 
-  // ============================================
-  // MONEY-SAVING ACTIONS (things they may be missing)
-  // ============================================
+  // =====================
+  // STEP 4: FILE STATE RETURN
+  // =====================
+  steps.push({
+    title: "File your state tax return",
+    why: "Most states require a separate tax return in addition to the federal one. The good news: most of the info carries over from your federal return.",
+    instructions: [
+      "Check if your state has income tax \u2014 these states do NOT: Alaska, Florida, Nevada, New Hampshire, South Dakota, Tennessee, Texas, Washington, Wyoming. If you live in one of these, skip this step",
+      "Many free filing tools (IRS Free File partners, Cash App Taxes) include free state filing too",
+      "If not, check your state's tax agency website \u2014 search \"[your state] file taxes free\" for free state filing options",
+      "Your state return uses most of the same info as your federal return, so it's much faster to do",
+    ],
+    tip: "File your federal return first \u2014 your state return pulls info from it.",
+  });
 
-  // Credits they qualify for
-  if (calc.childTaxCredit > 0) {
-    actions.push({
-      emoji: "\uD83D\uDC76",
-      title: `Claim ${fmtD(calc.childTaxCredit)} in Child Tax Credits`,
-      detail: `You qualify for ${fmtD(calc.childTaxCredit)} in Child Tax Credits (${fmtD(TAX_DATA.credits.childTaxCredit.max)} per child under ${TAX_DATA.credits.childTaxCredit.ageLimit}). Up to ${fmtD(TAX_DATA.credits.childTaxCredit.refundable)} per child is refundable — meaning you get it even if you don't owe any tax. Make sure each child's Social Security number is correct on your return.`,
-      priority: "now",
-      category: "save",
-    });
-  }
+  // =====================
+  // STEP 5: SPECIFIC MONEY-SAVING CHECKS
+  // =====================
+  const moneySavers: string[] = [];
+  const moneyLinks: { label: string; url: string }[] = [];
 
   // EITC check
   const eitcLimits = TAX_DATA.credits.eitc;
@@ -116,205 +201,218 @@ function buildActions(
   const eitcBracket = numChildren >= 3 ? eitcLimits.threeOrMore : numChildren === 2 ? eitcLimits.twoChildren : numChildren === 1 ? eitcLimits.oneChild : eitcLimits.noChildren;
   const eitcAgiLimit = filingStatus === "married_jointly" ? eitcBracket.agiJoint : eitcBracket.agiSingle;
   if (calc.agi <= eitcAgiLimit) {
-    actions.push({
-      emoji: "\uD83C\uDF1F",
-      title: `Check if you qualify for up to ${fmtD(eitcBracket.max)} from the Earned Income Tax Credit`,
-      detail: `Based on your income, you may qualify for the EITC — one of the most valuable credits available. It's fully refundable, meaning you get cash back even if you owe $0 in tax. About 20% of eligible people don't claim this. Use the IRS EITC Assistant tool at irs.gov to check your eligibility.`,
-      priority: "now",
-      category: "save",
-    });
+    moneySavers.push(
+      `Check if you qualify for the Earned Income Tax Credit (EITC) \u2014 this is a cash-back credit worth up to ${fmtD(eitcBracket.max)} that about 20% of eligible people miss. Use the IRS tool below to check`
+    );
+    moneyLinks.push({ label: "IRS EITC Assistant \u2014 Check if you qualify", url: "https://www.irs.gov/credits-deductions/individuals/earned-income-tax-credit/use-the-eitc-assistant" });
   }
 
-  // Student loan interest
   if (s.has("student_loans") && (profile.studentLoanInterest ?? 0) > 0) {
-    actions.push({
-      emoji: "\uD83C\uDF93",
-      title: `Deduct your ${fmtD(Math.min(profile.studentLoanInterest ?? 0, d.studentLoanMax))} in student loan interest`,
-      detail: `You can deduct up to ${fmtD(d.studentLoanMax)} in student loan interest — and you get this even if you take the standard deduction. Make sure you have your Form 1098-E from your loan servicer.`,
-      priority: "now",
-      category: "save",
-    });
+    moneySavers.push(
+      `Make sure your student loan interest deduction (${fmtD(Math.min(profile.studentLoanInterest ?? 0, d.studentLoanMax))}) is included \u2014 the filing software should pick this up from your 1098-E form`
+    );
   }
 
-  // SE quarterly payments
-  if ((s.has("self_employed") || s.has("side_hustle")) && calc.selfEmploymentTax > 0) {
-    actions.push({
-      emoji: "\uD83D\uDCC6",
-      title: "Set up quarterly estimated tax payments for next year",
-      detail: `As a self-employed person, your taxes aren't automatically withheld. You need to pay estimated taxes quarterly to avoid penalties. Based on this year's numbers, plan to send roughly ${fmtD(Math.round(calc.taxAfterCredits / 4))} per quarter. Use IRS Form 1040-ES or pay online at irs.gov/payments.`,
-      priority: "soon",
-      category: "plan",
-    });
+  if (calc.childTaxCredit > 0) {
+    moneySavers.push(
+      `Verify your Child Tax Credit (${fmtD(calc.childTaxCredit)}) is included \u2014 the software calculates this automatically when you enter your children's info`
+    );
   }
-
-  // ============================================
-  // NEXT YEAR PLANNING
-  // ============================================
 
   // W-4 adjustment
-  if (calc.totalWithholding > 0) {
-    if (calc.estimatedRefundOrOwed > 1500) {
-      actions.push({
-        emoji: "\uD83D\uDD27",
-        title: "Adjust your W-4 to get more money in each paycheck",
-        detail: `You're getting a large refund, which means too much tax is being taken from each paycheck. That's YOUR money sitting with the IRS interest-free all year. Ask your employer's HR/payroll department for a new W-4 form and claim more allowances. Use the IRS Tax Withholding Estimator (irs.gov/w4app) to get the right amount.`,
-        priority: "soon",
-        category: "plan",
-      });
-    } else if (calc.estimatedRefundOrOwed < -500) {
-      actions.push({
-        emoji: "\uD83D\uDD27",
-        title: "Adjust your W-4 so you don't owe next year",
-        detail: `You owed money this year because not enough tax was taken from your paychecks. Update your W-4 with your employer to increase withholding. Use the IRS Tax Withholding Estimator (irs.gov/w4app) to find the right setting. This is especially important if you have multiple income sources.`,
-        priority: "soon",
-        category: "plan",
-      });
-    }
+  if (calc.totalWithholding > 0 && calc.estimatedRefundOrOwed > 1500) {
+    moneySavers.push(
+      `After you file: Ask your employer's HR to update your W-4 form. You're getting a large refund, which means too much money is taken from each paycheck. Adjusting this puts more money in your pocket every payday instead of waiting for a refund. Use the IRS calculator below`
+    );
+    moneyLinks.push({ label: "IRS Withholding Estimator \u2014 Get your W-4 right", url: "https://www.irs.gov/individuals/tax-withholding-estimator" });
+  } else if (calc.totalWithholding > 0 && calc.estimatedRefundOrOwed < -500) {
+    moneySavers.push(
+      `After you file: Ask your employer's HR to update your W-4 form so more tax is taken from each paycheck. This way you won't owe a lump sum next year. Use the IRS calculator below`
+    );
+    moneyLinks.push({ label: "IRS Withholding Estimator \u2014 Get your W-4 right", url: "https://www.irs.gov/individuals/tax-withholding-estimator" });
   }
 
-  // Retirement savings
+  // Retirement
   if (!s.has("retirement_contrib") && calc.grossIncome > 25000) {
-    actions.push({
-      emoji: "\uD83C\uDFE6",
-      title: "Start contributing to a 401(k) or IRA to lower next year's taxes",
-      detail: `Every dollar you put into a traditional 401(k) or IRA reduces your taxable income. At your ${(calc.marginalRate * 100).toFixed(0)}% tax bracket, contributing ${fmtD(5000)} would save you ~${fmtD(Math.round(5000 * calc.marginalRate))} in taxes AND build your retirement savings. If your employer offers a 401(k) match, contribute at least enough to get the full match — it's literally free money.`,
-      priority: "next_year",
-      category: "plan",
-    });
-  } else if (s.has("retirement_contrib")) {
-    const current401k = profile.contribution401k ?? 0;
-    if (current401k > 0 && current401k < d.k401Limit) {
-      actions.push({
-        emoji: "\u2B06\uFE0F",
-        title: "Increase your 401(k) contributions to save more on taxes",
-        detail: `You contributed ${fmtD(current401k)} this year — you could contribute up to ${fmtD(d.k401Limit)}. Every additional dollar saves you ${(calc.marginalRate * 100).toFixed(0)} cents in taxes. Even increasing by ${fmtD(1000)} would save ~${fmtD(Math.round(1000 * calc.marginalRate))} on next year's tax bill.`,
-        priority: "next_year",
-        category: "plan",
-      });
-    }
+    moneySavers.push(
+      `Start putting money into a 401(k) or IRA to lower next year's taxes. At your tax rate, every $1,000 you contribute saves you about ${fmtD(Math.round(1000 * calc.marginalRate))} in taxes AND builds your retirement. If your employer matches 401(k) contributions, contribute at least enough to get the full match \u2014 it's free money`
+    );
   }
 
-  // HSA recommendation
-  if (!s.has("hsa") && calc.grossIncome > 20000) {
-    actions.push({
-      emoji: "\uD83D\uDC8A",
-      title: "Look into opening an HSA if you have a high-deductible health plan",
-      detail: `An HSA is one of the best tax deals available. Money goes in tax-free, grows tax-free, and comes out tax-free for medical expenses. You can contribute up to ${fmtD(d.hsaSelf)} (individual) or ${fmtD(d.hsaFamily)} (family). Check if your health insurance plan qualifies as a "high-deductible health plan" (HDHP).`,
-      priority: "next_year",
-      category: "plan",
-    });
-  }
-
-  // Record keeping
   if (s.has("self_employed") || s.has("side_hustle")) {
-    actions.push({
-      emoji: "\uD83D\uDCC2",
-      title: "Keep better records of business expenses throughout the year",
-      detail: `Track every business expense as it happens — don't wait until tax time. Use a free app like Wave or a spreadsheet. Save receipts for anything over $75. Track mileage with a free app like Stride or MileIQ. Good records can save you thousands and protect you in an audit.`,
-      priority: "next_year",
-      category: "protect",
+    moneySavers.push(
+      "Set up quarterly estimated tax payments so you don't owe a big lump sum next year. Pay online at irs.gov/payments four times a year (April, June, September, January)"
+    );
+    moneyLinks.push({ label: "IRS Online Payments \u2014 Pay estimated taxes", url: "https://www.irs.gov/payments" });
+  }
+
+  if (moneySavers.length > 0) {
+    steps.push({
+      title: "Don't leave money on the table",
+      why: "These are specific things that could save you money \u2014 either on this year's return or next year's.",
+      instructions: moneySavers,
+      links: moneyLinks.length > 0 ? moneyLinks : undefined,
     });
   }
 
-  // State filing reminder
-  actions.push({
-    emoji: "\uD83C\uDFDB\uFE0F",
-    title: "Don't forget your state tax return",
-    detail: `Most states require a separate state tax return in addition to your federal return. Check your state's tax agency website for filing requirements, deadlines, and free filing options. If you moved states during the year, you may need to file in both states.`,
-    priority: "now",
-    category: "file",
+  // =====================
+  // STEP 6: KEEP RECORDS
+  // =====================
+  steps.push({
+    title: "Save everything for 3 years",
+    why: "The IRS can audit you for up to 3 years (6 years if something is way off). Keep your records in case they ask questions.",
+    instructions: [
+      "Save a copy of your filed return (the software lets you download a PDF)",
+      "Keep all your tax documents (W-2s, 1099s, receipts) in a folder",
+      "Store digital copies in the cloud (Google Drive, iCloud, Dropbox) so you don't lose them",
+      "Don't throw anything away for at least 3 years after filing",
+    ],
   });
 
-  // Document retention
-  actions.push({
-    emoji: "\uD83D\uDDC4\uFE0F",
-    title: "Keep copies of everything for at least 3 years",
-    detail: `Save a copy of your filed return plus all supporting documents (W-2s, 1099s, receipts) for at least 3 years — that's how long the IRS has to audit most returns. If you reported income substantially wrong, they have 6 years. Store digital copies in the cloud so you don't lose them.`,
-    priority: "soon",
-    category: "protect",
-  });
-
-  return actions;
+  return steps;
 }
-
-const PRIORITY_CONFIG = {
-  now: { label: "DO NOW", color: "text-tax-red", bg: "bg-tax-red/10", border: "border-tax-red/20" },
-  soon: { label: "DO SOON", color: "text-tax-orange", bg: "bg-tax-orange-dim", border: "border-tax-orange/20" },
-  next_year: { label: "FOR NEXT YEAR", color: "text-tax-accent", bg: "bg-tax-accent-dim", border: "border-tax-accent/20" },
-};
 
 export function ActionPlanScreen({
   profile,
   filingStatus,
   situations,
+  level,
+  onLearnMore,
 }: ActionPlanScreenProps) {
+  const steps = useMemo(
+    () => buildSteps(profile, filingStatus, situations, level),
+    [profile, filingStatus, situations, level]
+  );
+
   const calc = useMemo(
     () => calculateTax(profile, filingStatus),
     [profile, filingStatus]
   );
 
-  const actions = useMemo(
-    () => buildActions(calc, profile, filingStatus, situations),
-    [calc, profile, filingStatus, situations]
-  );
-
-  const groupedActions = useMemo(() => {
-    const groups: Record<string, Action[]> = { now: [], soon: [], next_year: [] };
-    actions.forEach((a) => groups[a.priority].push(a));
-    return groups;
-  }, [actions]);
+  const isRefund = calc.totalWithholding > 0 && calc.estimatedRefundOrOwed >= 0;
 
   return (
     <div className="max-w-[640px] mx-auto animate-screen-up">
       {/* Header */}
       <div className="text-center mb-6">
         <div className="text-[48px] mb-2 animate-emoji">&#x1F3AF;</div>
-        <h1 className="text-2xl font-extrabold text-tax-text font-serif mb-2">
-          What You Should Do
+        <h1 className="text-[26px] font-extrabold text-tax-text font-serif mb-2">
+          Here&apos;s Exactly What To Do
         </h1>
-        <p className="text-sm text-tax-muted font-sans max-w-[480px] mx-auto">
-          Your personalized action plan based on everything you told us.
-          These are the specific steps to file correctly and keep as much of your money as possible.
+        <p className="text-[14px] text-tax-muted font-sans max-w-[480px] mx-auto leading-relaxed">
+          Follow these steps in order. Each one tells you exactly where to go and what to click.
         </p>
       </div>
 
-      {/* Action groups */}
-      {(["now", "soon", "next_year"] as const).map((priority) => {
-        const group = groupedActions[priority];
-        if (group.length === 0) return null;
-        const config = PRIORITY_CONFIG[priority];
+      {/* Deadline callout */}
+      <div className="bg-tax-orange-dim border border-tax-orange/20 rounded-xl p-4 mb-5 animate-reveal">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-lg">&#x23F0;</span>
+          <span className="text-[14px] font-bold text-tax-orange font-sans">
+            Deadline: {TAX_DATA.filingDeadline}
+          </span>
+        </div>
+        <p className="text-[13px] text-tax-text font-sans leading-relaxed">
+          {isRefund
+            ? "File as early as possible to get your refund faster. Most people get their refund in 2\u20133 weeks when filing electronically with direct deposit."
+            : `This is the last day to file and pay. If you need more time to file (not pay), you can request a free extension \u2014 but it's better to just file now while you have momentum.`
+          }
+        </p>
+      </div>
 
-        return (
-          <div key={priority} className="mb-6">
-            <div className={`inline-block px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider font-mono mb-3 ${config.color} ${config.bg} border ${config.border}`}>
-              {config.label}
+      {/* Steps */}
+      {steps.map((step, i) => (
+        <div
+          key={i}
+          className={`mb-4 animate-card delay-${Math.min(i, 12)}`}
+        >
+          {/* Step number */}
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-tax-accent flex items-center justify-center mt-0.5">
+              <span className="text-[14px] font-bold text-white font-mono">{i + 1}</span>
             </div>
+            <div className="flex-1">
+              <h3 className="text-[16px] font-bold text-tax-text font-sans mb-1">
+                {step.title}
+              </h3>
+              <p className="text-[13px] text-tax-muted font-sans leading-relaxed mb-3">
+                {step.why}
+              </p>
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="ml-11 bg-tax-surface border border-tax-border rounded-xl p-4 mb-2">
             <div className="flex flex-col gap-2.5">
-              {group.map((action, i) => (
-                <div
-                  key={i}
-                  className={`bg-tax-surface border border-tax-border rounded-[10px] p-4 animate-card delay-${Math.min(i, 12)}`}
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="text-xl flex-shrink-0 mt-0.5">{action.emoji}</span>
-                    <div>
-                      <h3 className="text-[14px] font-bold text-tax-text font-sans mb-1.5">
-                        {action.title}
-                      </h3>
-                      <p className="text-[13px] text-tax-muted font-sans leading-relaxed">
-                        {action.detail}
-                      </p>
-                    </div>
+              {step.instructions.map((instruction, j) => (
+                <div key={j} className="flex gap-2.5 items-start">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full border-[1.5px] border-tax-border flex items-center justify-center mt-0.5">
+                    <span className="text-[9px] text-tax-muted font-mono">{j + 1}</span>
                   </div>
+                  <p className="text-[13px] text-tax-text font-sans leading-relaxed">
+                    {instruction}
+                  </p>
                 </div>
               ))}
             </div>
+
+            {/* Tip */}
+            {step.tip && (
+              <div className="mt-3 pt-3 border-t border-tax-border">
+                <p className="text-[12px] text-tax-green font-sans leading-relaxed">
+                  <strong>&#x1F4A1; Tip:</strong> {step.tip}
+                </p>
+              </div>
+            )}
+
+            {/* Warning */}
+            {step.warning && (
+              <div className="mt-3 pt-3 border-t border-tax-border">
+                <p className="text-[12px] text-tax-orange font-sans leading-relaxed">
+                  <strong>&#x26A0;&#xFE0F; Heads up:</strong> {step.warning}
+                </p>
+              </div>
+            )}
+
+            {/* Links */}
+            {step.links && step.links.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-tax-border flex flex-col gap-2">
+                {step.links.map((link, k) => (
+                  <a
+                    key={k}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 py-2.5 px-3 bg-tax-accent-dim border border-tax-accent/20 rounded-lg text-[13px] text-tax-accent font-sans font-semibold no-underline hover:bg-tax-accent/20 transition-colors btn-press"
+                  >
+                    <span className="text-sm">&#x1F517;</span>
+                    {link.label}
+                    <span className="ml-auto text-tax-muted text-xs">&rarr;</span>
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
-        );
-      })}
+        </div>
+      ))}
+
+      {/* Learn more option */}
+      <div className="mt-6 mb-4">
+        <div className="text-center mb-3">
+          <p className="text-[13px] text-tax-muted font-sans">
+            Want to understand how taxes work in more detail?
+          </p>
+        </div>
+        <button
+          onClick={onLearnMore}
+          className="w-full py-4 rounded-xl border border-tax-border bg-tax-surface text-tax-text text-[14px] font-semibold font-sans cursor-pointer hover:bg-tax-surface-alt transition-colors btn-press"
+        >
+          &#x1F4DA; Learn More About Each Topic
+        </button>
+      </div>
 
       {/* Disclaimer */}
-      <div className="bg-tax-surface border border-tax-border rounded-[10px] p-5 mt-6">
+      <div className="bg-tax-surface border border-tax-border rounded-xl p-5 mt-4">
         <div className="text-[10px] font-bold text-tax-muted uppercase tracking-wider mb-2 font-mono">
           Important Disclaimer
         </div>
@@ -322,7 +420,7 @@ export function ActionPlanScreen({
           <strong className="text-tax-text">This is not financial, tax, or legal advice.</strong> This
           tool provides educational estimates based on the information you entered and general IRS
           guidelines for the {TAX_DATA.year} tax year. Your actual tax situation may differ based on
-          factors not captured here, including state taxes, alternative minimum tax (AMT), phaseouts,
+          factors not captured here, including state taxes, alternative minimum tax, phaseouts,
           and other provisions.
         </p>
         <p className="text-[12px] text-tax-muted font-sans leading-relaxed mb-2">
@@ -332,8 +430,8 @@ export function ActionPlanScreen({
         </p>
         <p className="text-[12px] text-tax-muted font-sans leading-relaxed">
           <strong className="text-tax-text">For important financial decisions, consult a qualified
-          tax professional (CPA, Enrolled Agent, or tax attorney)</strong> who can review your
-          complete situation and provide personalized advice.
+          tax professional</strong> (CPA, Enrolled Agent, or tax attorney) who can review your
+          complete situation.
         </p>
       </div>
 

@@ -10,7 +10,7 @@ interface TopicsScreenProps {
   completed: string[];
   filingStatus: string | null;
   onSelect: (id: string) => void;
-  onViewActionPlan: () => void;
+  onBack: () => void;
 }
 
 export function TopicsScreen({
@@ -18,21 +18,27 @@ export function TopicsScreen({
   completed,
   filingStatus,
   onSelect,
-  onViewActionPlan,
+  onBack,
 }: TopicsScreenProps) {
   return (
     <div className="max-w-[600px] mx-auto animate-screen">
+      <button
+        onClick={onBack}
+        className="bg-transparent border-none text-tax-accent cursor-pointer text-xs font-sans p-0 mb-3"
+      >
+        &larr; Back to Action Plan
+      </button>
+
       <div className="flex justify-between items-center mb-1">
         <h2 className="text-xl font-extrabold text-tax-text font-serif m-0">
-          Your Tax Guide
+          Learn More
         </h2>
         <span className="font-mono text-[10px] text-tax-muted">
           {completed.length}/{topics.length}
         </span>
       </div>
-      <div className="text-[11px] text-tax-muted font-mono mb-2.5">
-        {filingStatus?.replace(/_/g, " ")} &bull; {TAX_DATA.year} Tax Year &bull;
-        IRS-sourced data
+      <div className="text-[12px] text-tax-muted font-sans mb-3">
+        Want to understand how taxes work? Tap any topic for a personalized AI explanation.
       </div>
 
       <ProgressBar current={completed.length} total={topics.length} />
@@ -44,11 +50,11 @@ export function TopicsScreen({
             <div key={t.id} className={`animate-card delay-${Math.min(i, 12)}`}>
             <Card
               onClick={() => onSelect(t.id)}
-              className={
+              className={`btn-press ${
                 done
                   ? "!border-tax-green !bg-tax-green-dim"
                   : ""
-              }
+              }`}
             >
               <span className="text-[22px]">{t.icon}</span>
               <div className="flex-1">
@@ -73,15 +79,6 @@ export function TopicsScreen({
           );
         })}
       </div>
-
-      {/* Action Plan Button */}
-      <button
-        onClick={onViewActionPlan}
-        className="w-full mt-5 py-5 rounded-xl border-2 border-tax-accent bg-tax-accent-dim text-white text-[15px] font-bold font-sans cursor-pointer hover:bg-tax-accent/20 transition-all btn-press animate-glow"
-      >
-        <span className="text-xl mr-2">&#x1F3AF;</span>
-        What You Should Do &mdash; Your Action Plan
-      </button>
     </div>
   );
 }

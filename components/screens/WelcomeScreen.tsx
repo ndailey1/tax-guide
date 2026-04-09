@@ -1,6 +1,7 @@
 "use client";
 
 import { KNOWLEDGE_LEVELS } from "@/lib/topics";
+import { SCREEN_FLAVOR } from "@/lib/personality";
 import { Card } from "@/components/ui/Card";
 
 interface WelcomeScreenProps {
@@ -19,7 +20,10 @@ export function WelcomeScreen({ onSelect }: WelcomeScreenProps) {
           We&apos;ll walk you through your taxes step by step, figure out if you&apos;re
           getting money back or if you owe, and explain everything in plain English.
         </p>
-        <div className="text-[10px] text-tax-dim font-mono mt-2">
+        <p className="text-tax-dim text-[12px] mt-2 font-sans italic max-w-[380px] mx-auto">
+          {SCREEN_FLAVOR.welcome.tagline}
+        </p>
+        <div className="text-[10px] text-tax-dim font-mono mt-3">
           2025 Tax Year &bull; Filed in 2026
         </div>
       </div>
@@ -41,6 +45,10 @@ export function WelcomeScreen({ onSelect }: WelcomeScreenProps) {
           </div>
         ))}
       </div>
+
+      <p className="text-[10px] text-tax-dim font-sans text-center mt-6 italic">
+        {SCREEN_FLAVOR.welcome.footer}
+      </p>
     </div>
   );
 }

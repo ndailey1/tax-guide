@@ -6,6 +6,7 @@ import { calculateTax, type TaxCalculation } from "@/lib/financial-profile";
 import { fmtD, pct } from "@/lib/tax-data";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { Confetti } from "@/components/ui/Confetti";
+import { getAnalysisFlavor } from "@/lib/personality";
 
 interface AnalysisScreenProps {
   profile: FinancialProfile;
@@ -171,6 +172,9 @@ export function AnalysisScreen({
                 duration={1500}
               />
             </div>
+            <p className="text-[13px] text-tax-dim font-sans italic mb-2 animate-reveal" style={{ animationDelay: "0.8s" }}>
+              {getAnalysisFlavor(calc.estimatedRefundOrOwed, hasWithholding)}
+            </p>
             <p className="text-sm text-tax-muted font-sans">
               {isRefund
                 ? "Estimated refund \u2014 your employer sent more tax to the IRS than you actually owe, so you get the difference back"

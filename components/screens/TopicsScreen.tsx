@@ -37,8 +37,11 @@ export function TopicsScreen({
           {completed.length}/{topics.length}
         </span>
       </div>
-      <div className="text-[12px] text-tax-muted font-sans mb-3">
+      <div className="text-[12px] text-tax-muted font-sans mb-1">
         Want to understand how taxes work? Tap any topic for a personalized AI explanation.
+      </div>
+      <div className="text-[11px] text-tax-dim font-sans italic mb-3">
+        Think of it as a crash course in not getting screwed by the tax system.
       </div>
 
       <ProgressBar current={completed.length} total={topics.length} />

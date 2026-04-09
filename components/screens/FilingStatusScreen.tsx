@@ -20,9 +20,12 @@ export function FilingStatusScreen({
       <h2 className="text-[22px] font-extrabold text-tax-text font-serif mb-1">
         Filing Status
       </h2>
-      <p className="text-tax-muted text-[13px] mb-4 font-sans">
+      <p className="text-tax-muted text-[13px] mb-1 font-sans">
         This determines brackets, deductions & credit eligibility as of Dec 31,{" "}
         {TAX_DATA.year}.
+      </p>
+      <p className="text-tax-dim text-[11px] mb-4 font-sans italic">
+        The IRS cares a lot about your relationship status. More than your ex does, honestly.
       </p>
 
       <div className="flex flex-col gap-2">

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { INPUT_STEPS } from "@/lib/input-steps";
+import { ENCOURAGEMENT, SCREEN_FLAVOR } from "@/lib/personality";
 import type { FinancialProfile } from "@/lib/financial-profile";
 
 interface FinancialDetailsScreenProps {
@@ -83,6 +84,18 @@ export function FinancialDetailsScreen({
           {currentStep + 1}/{steps.length}
         </span>
       </div>
+
+      {/* Encouragement message */}
+      {currentStep > 0 && (
+        <p className="text-[11px] text-tax-dim font-sans italic text-center mb-4 animate-screen">
+          {ENCOURAGEMENT[currentStep % ENCOURAGEMENT.length]}
+        </p>
+      )}
+      {currentStep === 0 && (
+        <p className="text-[12px] text-tax-muted font-sans text-center mb-4 animate-screen">
+          {SCREEN_FLAVOR.financial.intro}
+        </p>
+      )}
 
       {/* Back button */}
       {currentStep > 0 && (

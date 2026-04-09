@@ -302,6 +302,9 @@ export function ActionPlanScreen({
         <p className="text-[14px] text-tax-muted font-sans max-w-[480px] mx-auto leading-relaxed">
           Follow these steps in order. Each one tells you exactly where to go and what to click.
         </p>
+        <p className="text-[12px] text-tax-dim font-sans italic mt-1">
+          Here&apos;s the part where we actually tell you what to do (instead of just scaring you with numbers).
+        </p>
       </div>
 
       {/* Deadline callout */}
@@ -396,8 +399,19 @@ export function ActionPlanScreen({
         </div>
       ))}
 
+      {/* Completion message */}
+      <div className="text-center mt-6 mb-4 animate-reveal" style={{ animationDelay: "0.5s" }}>
+        <div className="text-[32px] mb-2">&#x1F389;</div>
+        <p className="text-[15px] font-bold text-tax-text font-sans">
+          That&apos;s it. Seriously. You&apos;re going to be fine.
+        </p>
+        <p className="text-[12px] text-tax-dim font-sans italic mt-1">
+          You now know more about your taxes than most adults. Go you.
+        </p>
+      </div>
+
       {/* Learn more option */}
-      <div className="mt-6 mb-4">
+      <div className="mt-4 mb-4">
         <div className="text-center mb-3">
           <p className="text-[13px] text-tax-muted font-sans">
             Want to understand how taxes work in more detail?

@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import type { Topic } from "@/lib/types";
 import { TAX_DATA } from "@/lib/tax-data";
 import { SectionRenderer } from "@/components/ui/SectionRenderer";
 import { MdRender } from "@/components/ui/MdRender";
+import { LOADING_MESSAGES } from "@/lib/personality";
 
 interface DetailScreenProps {
   topic: Topic;
@@ -32,10 +33,20 @@ export function DetailScreen({
   onDone,
 }: DetailScreenProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [loadingMsg, setLoadingMsg] = useState(LOADING_MESSAGES[0]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [aiContent, followUpAnswer]);
+
+  // Rotate loading messages
+  useEffect(() => {
+    if (!aiLoading || aiContent) return;
+    const interval = setInterval(() => {
+      setLoadingMsg(LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)]);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [aiLoading, aiContent]);
 
   return (
     <div className="max-w-[680px] mx-auto animate-screen">
@@ -71,8 +82,8 @@ export function DetailScreen({
         {aiLoading && !aiContent ? (
           <div className="py-8 text-center">
             <div className="text-[28px] animate-gentle-pulse">&#x1F50D;</div>
-            <p className="text-tax-muted text-[13px] font-sans mt-2">
-              Writing your personalized explanation...
+            <p className="text-tax-muted text-[13px] font-sans mt-2 animate-screen" key={loadingMsg}>
+              {loadingMsg}
             </p>
           </div>
         ) : aiContent ? (

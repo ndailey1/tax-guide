@@ -28,9 +28,11 @@ export function SituationsScreen({
       <h2 className="text-[22px] font-extrabold text-tax-text font-serif mb-1">
         What applies to your {TAX_DATA.year} tax year?
       </h2>
-      <p className="text-tax-muted text-[13px] mb-4 font-sans">
-        Select all that apply. This ensures you don&apos;t miss deductions, credits, or
-        requirements.
+      <p className="text-tax-muted text-[13px] mb-1 font-sans">
+        Select all that apply. The more we know, the more money we can try to save you.
+      </p>
+      <p className="text-tax-dim text-[11px] mb-4 font-sans italic">
+        Don&apos;t worry if you miss something &mdash; the IRS will definitely remind you.
       </p>
 
       {Object.entries(CATEGORIES).map(([cat, label]) => (

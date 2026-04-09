@@ -10,6 +10,7 @@ interface TopicsScreenProps {
   completed: string[];
   filingStatus: string | null;
   onSelect: (id: string) => void;
+  onViewActionPlan: () => void;
 }
 
 export function TopicsScreen({
@@ -17,6 +18,7 @@ export function TopicsScreen({
   completed,
   filingStatus,
   onSelect,
+  onViewActionPlan,
 }: TopicsScreenProps) {
   return (
     <div className="max-w-[600px] mx-auto">
@@ -70,6 +72,15 @@ export function TopicsScreen({
           );
         })}
       </div>
+
+      {/* Action Plan Button */}
+      <button
+        onClick={onViewActionPlan}
+        className="w-full mt-5 py-4 rounded-[10px] border-2 border-tax-accent bg-tax-accent-dim text-white text-sm font-bold font-sans cursor-pointer hover:bg-tax-accent/20 transition-colors"
+      >
+        <span className="text-lg mr-2">&#x1F3AF;</span>
+        What You Should Do &mdash; Your Action Plan
+      </button>
     </div>
   );
 }

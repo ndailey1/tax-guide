@@ -14,6 +14,7 @@ import { FinancialDetailsScreen } from "@/components/screens/FinancialDetailsScr
 import { AnalysisScreen } from "@/components/screens/AnalysisScreen";
 import { TopicsScreen } from "@/components/screens/TopicsScreen";
 import { DetailScreen } from "@/components/screens/DetailScreen";
+import { ActionPlanScreen } from "@/components/screens/ActionPlanScreen";
 
 type Screen =
   | "welcome"
@@ -22,7 +23,8 @@ type Screen =
   | "financial"
   | "analysis"
   | "topics"
-  | "detail";
+  | "detail"
+  | "action_plan";
 
 export default function TaxGuide() {
   const [screen, setScreen] = useState<Screen>("welcome");
@@ -205,6 +207,7 @@ export default function TaxGuide() {
           completed={completed}
           filingStatus={filingStatus}
           onSelect={handleSelectTopic}
+          onViewActionPlan={() => setScreen("action_plan")}
         />
       )}
 
@@ -220,6 +223,15 @@ export default function TaxGuide() {
           followUpAnswer={followUpStream.content}
           followUpLoading={followUpStream.loading}
           onDone={handleDone}
+        />
+      )}
+
+      {screen === "action_plan" && filingStatus && level && (
+        <ActionPlanScreen
+          profile={profile}
+          filingStatus={filingStatus}
+          situations={situations}
+          level={level}
         />
       )}
     </div>

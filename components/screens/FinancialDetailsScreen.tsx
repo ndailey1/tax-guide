@@ -67,7 +67,7 @@ export function FinancialDetailsScreen({
   };
 
   return (
-    <div className="max-w-[560px] mx-auto">
+    <div className="max-w-[560px] mx-auto animate-screen" key={step.id}>
       {/* Progress */}
       <div className="flex items-center gap-3 mb-6">
         <div className="flex-1 h-[5px] bg-tax-border rounded-full overflow-hidden">
@@ -199,13 +199,13 @@ export function FinancialDetailsScreen({
       <div className="flex gap-3">
         <button
           onClick={handleSkip}
-          className="flex-1 py-3 rounded-lg border border-tax-border bg-transparent text-tax-muted text-sm font-semibold font-sans cursor-pointer hover:border-tax-border-light transition-colors"
+          className="flex-1 py-4 rounded-xl border border-tax-border bg-transparent text-tax-muted text-[14px] font-semibold font-sans cursor-pointer hover:border-tax-border-light transition-colors btn-press"
         >
           I&apos;m not sure yet
         </button>
         <button
           onClick={handleNext}
-          className="flex-1 py-3 rounded-lg border-none bg-tax-accent text-white text-sm font-bold font-sans cursor-pointer"
+          className="flex-1 py-4 rounded-xl border-none bg-tax-accent text-white text-[14px] font-bold font-sans cursor-pointer btn-press animate-glow"
         >
           {isLast ? "See My Tax Analysis \u2192" : "Next \u2192"}
         </button>

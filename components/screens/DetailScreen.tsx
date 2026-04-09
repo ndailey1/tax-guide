@@ -38,7 +38,7 @@ export function DetailScreen({
   }, [aiContent, followUpAnswer]);
 
   return (
-    <div className="max-w-[680px] mx-auto">
+    <div className="max-w-[680px] mx-auto animate-screen">
       {/* Back button */}
       <button
         onClick={onBack}
@@ -69,14 +69,16 @@ export function DetailScreen({
           &#x1F4A1; Plain-Language Explanation
         </div>
         {aiLoading && !aiContent ? (
-          <div className="py-6 text-center">
-            <div className="text-[22px] animate-pulse">&#x1F50D;</div>
-            <p className="text-tax-muted text-xs font-sans">
-              Writing your explanation...
+          <div className="py-8 text-center">
+            <div className="text-[28px] animate-gentle-pulse">&#x1F50D;</div>
+            <p className="text-tax-muted text-[13px] font-sans mt-2">
+              Writing your personalized explanation...
             </p>
           </div>
         ) : aiContent ? (
-          <MdRender text={aiContent} />
+          <div className={aiLoading ? "streaming-cursor" : ""}>
+            <MdRender text={aiContent} />
+          </div>
         ) : null}
       </div>
 

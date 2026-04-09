@@ -1,10 +1,24 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Taxes, Explained For Humans | 2025 Tax Guide",
   description:
     "Personalized, legally accurate tax guidance built from official IRS data. Understand brackets, deductions, credits, and more.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Tax Guide",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#0C1018",
 };
 
 export default function RootLayout({
@@ -20,7 +34,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans safe-bottom">{children}</body>
     </html>
   );
 }

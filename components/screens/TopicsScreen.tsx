@@ -21,7 +21,7 @@ export function TopicsScreen({
   onViewActionPlan,
 }: TopicsScreenProps) {
   return (
-    <div className="max-w-[600px] mx-auto">
+    <div className="max-w-[600px] mx-auto animate-screen">
       <div className="flex justify-between items-center mb-1">
         <h2 className="text-xl font-extrabold text-tax-text font-serif m-0">
           Your Tax Guide
@@ -38,11 +38,11 @@ export function TopicsScreen({
       <ProgressBar current={completed.length} total={topics.length} />
 
       <div className="flex flex-col gap-1.5">
-        {topics.map((t) => {
+        {topics.map((t, i) => {
           const done = completed.includes(t.id);
           return (
+            <div key={t.id} className={`animate-card delay-${Math.min(i, 12)}`}>
             <Card
-              key={t.id}
               onClick={() => onSelect(t.id)}
               className={
                 done
@@ -69,6 +69,7 @@ export function TopicsScreen({
                 <span className="text-tax-accent text-base">&rarr;</span>
               )}
             </Card>
+            </div>
           );
         })}
       </div>
@@ -76,9 +77,9 @@ export function TopicsScreen({
       {/* Action Plan Button */}
       <button
         onClick={onViewActionPlan}
-        className="w-full mt-5 py-4 rounded-[10px] border-2 border-tax-accent bg-tax-accent-dim text-white text-sm font-bold font-sans cursor-pointer hover:bg-tax-accent/20 transition-colors"
+        className="w-full mt-5 py-5 rounded-xl border-2 border-tax-accent bg-tax-accent-dim text-white text-[15px] font-bold font-sans cursor-pointer hover:bg-tax-accent/20 transition-all btn-press animate-glow"
       >
-        <span className="text-lg mr-2">&#x1F3AF;</span>
+        <span className="text-xl mr-2">&#x1F3AF;</span>
         What You Should Do &mdash; Your Action Plan
       </button>
     </div>

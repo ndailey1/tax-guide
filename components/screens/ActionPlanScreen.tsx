@@ -265,10 +265,10 @@ export function ActionPlanScreen({
   }, [actions]);
 
   return (
-    <div className="max-w-[640px] mx-auto">
+    <div className="max-w-[640px] mx-auto animate-screen-up">
       {/* Header */}
       <div className="text-center mb-6">
-        <div className="text-[40px] mb-2">&#x1F3AF;</div>
+        <div className="text-[48px] mb-2 animate-emoji">&#x1F3AF;</div>
         <h1 className="text-2xl font-extrabold text-tax-text font-serif mb-2">
           What You Should Do
         </h1>
@@ -293,7 +293,7 @@ export function ActionPlanScreen({
               {group.map((action, i) => (
                 <div
                   key={i}
-                  className="bg-tax-surface border border-tax-border rounded-[10px] p-4"
+                  className={`bg-tax-surface border border-tax-border rounded-[10px] p-4 animate-card delay-${Math.min(i, 12)}`}
                 >
                   <div className="flex items-start gap-3">
                     <span className="text-xl flex-shrink-0 mt-0.5">{action.emoji}</span>

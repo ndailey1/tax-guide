@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { FinancialProfile } from "@/lib/financial-profile";
 import { calculateTax, type TaxCalculation } from "@/lib/financial-profile";
 import { fmtD, pct } from "@/lib/tax-data";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { Confetti } from "@/components/ui/Confetti";
 
 interface AnalysisScreenProps {
   profile: FinancialProfile;
@@ -136,25 +138,38 @@ export function AnalysisScreen({
 
   const isRefund = calc.estimatedRefundOrOwed >= 0;
   const hasWithholding = calc.totalWithholding > 0;
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    if (hasWithholding && isRefund && calc.estimatedRefundOrOwed > 0) {
+      const timer = setTimeout(() => setShowConfetti(true), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [hasWithholding, isRefund, calc.estimatedRefundOrOwed]);
 
   return (
-    <div className="max-w-[600px] mx-auto">
+    <div className="max-w-[600px] mx-auto animate-screen-up">
+      <Confetti active={showConfetti} />
+
       {/* Hero result */}
       <div className="text-center mb-6">
-        <div className="text-[40px] mb-2">
+        <div className="text-[48px] mb-2 animate-emoji">
           {hasWithholding ? (isRefund ? "\uD83C\uDF89" : "\uD83D\uDCB8") : "\uD83D\uDCCA"}
         </div>
-        <h1 className="text-2xl font-extrabold text-tax-text font-serif mb-2">
+        <h1 className="text-[26px] font-extrabold text-tax-text font-serif mb-3">
           Your Tax Estimate
         </h1>
         {hasWithholding ? (
           <>
-            <div
-              className={`text-4xl font-extrabold font-mono mb-1 ${
-                isRefund ? "text-tax-green" : "text-tax-red"
-              }`}
-            >
-              {isRefund ? "+" : "-"}{fmtD(Math.abs(Math.round(calc.estimatedRefundOrOwed)))}
+            <div className="animate-number">
+              <AnimatedNumber
+                value={Math.abs(Math.round(calc.estimatedRefundOrOwed))}
+                prefix={isRefund ? "+" : "-"}
+                className={`text-[42px] font-extrabold font-mono ${
+                  isRefund ? "text-tax-green" : "text-tax-red"
+                }`}
+                duration={1500}
+              />
             </div>
             <p className="text-sm text-tax-muted font-sans">
               {isRefund
@@ -164,8 +179,12 @@ export function AnalysisScreen({
           </>
         ) : (
           <>
-            <div className="text-4xl font-extrabold font-mono mb-1 text-tax-accent">
-              {fmtD(Math.round(calc.taxAfterCredits))}
+            <div className="animate-number">
+              <AnimatedNumber
+                value={Math.round(calc.taxAfterCredits)}
+                className="text-[42px] font-extrabold font-mono text-tax-accent"
+                duration={1500}
+              />
             </div>
             <p className="text-sm text-tax-muted font-sans">
               Estimated total federal tax
@@ -175,7 +194,7 @@ export function AnalysisScreen({
       </div>
 
       {/* Effective rate callout */}
-      <div className="bg-tax-accent-dim border border-tax-accent/20 rounded-[10px] p-4 mb-3 text-center">
+      <div className="bg-tax-accent-dim border border-tax-accent/20 rounded-[10px] p-4 mb-3 text-center animate-reveal" style={{ animationDelay: "0.3s" }}>
         <div className="text-[11px] font-bold text-tax-accent uppercase tracking-wider mb-1 font-mono">
           Your effective tax rate
         </div>

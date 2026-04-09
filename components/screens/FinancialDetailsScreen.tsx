@@ -135,8 +135,15 @@ export function FinancialDetailsScreen({
         ))}
       </div>
 
-      {/* Help dropdown */}
+      {/* Help section */}
       <div className="mb-6">
+        {/* Quick answer - always visible */}
+        <div className="bg-tax-accent-dim border border-tax-accent/20 rounded-lg px-3.5 py-2.5 mb-2">
+          <span className="text-[11px] font-bold text-tax-accent font-mono">QUICK ANSWER: </span>
+          <span className="text-[12px] text-tax-text font-sans">{step.help.quickAnswer}</span>
+        </div>
+
+        {/* Expandable detailed help */}
         <button
           onClick={() => setExpandedHelp(!expandedHelp)}
           className="flex items-center gap-2 bg-transparent border-none text-tax-accent cursor-pointer text-xs font-sans p-0 font-semibold"
@@ -147,7 +154,7 @@ export function FinancialDetailsScreen({
           >
             &#x25B6;
           </span>
-          {expandedHelp ? "Hide help" : "Help me find this"}
+          {expandedHelp ? "Hide details" : "Still confused? Learn more"}
         </button>
 
         {expandedHelp && (

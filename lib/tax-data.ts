@@ -1,8 +1,8 @@
 export const TAX_DATA = {
-  year: 2024,
-  filingYear: 2025,
-  filingDeadline: "April 15, 2025",
-  extensionDeadline: "October 15, 2025",
+  year: 2025,
+  filingYear: 2026,
+  filingDeadline: "April 15, 2026",
+  extensionDeadline: "October 15, 2026",
   brackets: {
     single: [
       { min: 0, max: 11600, rate: 0.10 },
@@ -77,10 +77,10 @@ export const TAX_DATA = {
   estimatedTax: {
     threshold: 1000,
     quarterlyDates: [
-      { q: "Q1", period: "Jan 1 \u2013 Mar 31", due: "April 15, 2025" },
-      { q: "Q2", period: "Apr 1 \u2013 May 31", due: "June 16, 2025" },
-      { q: "Q3", period: "Jun 1 \u2013 Aug 31", due: "September 15, 2025" },
-      { q: "Q4", period: "Sep 1 \u2013 Dec 31", due: "January 15, 2026" },
+      { q: "Q1", period: "Jan 1 \u2013 Mar 31", due: "April 15, 2026" },
+      { q: "Q2", period: "Apr 1 \u2013 May 31", due: "June 15, 2026" },
+      { q: "Q3", period: "Jun 1 \u2013 Aug 31", due: "September 15, 2026" },
+      { q: "Q4", period: "Sep 1 \u2013 Dec 31", due: "January 15, 2027" },
     ],
     safeHarborHighIncome: 150000,
   },

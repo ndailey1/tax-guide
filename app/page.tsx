@@ -77,7 +77,7 @@ export default function TaxGuide() {
     (topicTitle?: string) => {
       const levelLabel = KNOWLEDGE_LEVELS.find((k) => k.id === level)?.label || level;
       const base = topicTitle
-        ? `Tax educator. Filing: ${filingStatus}. Level: ${level}. Topic: ${topicTitle}. 2024 IRS data only. Markdown.`
+        ? `Tax educator. Filing: ${filingStatus}. Level: ${level}. Topic: ${topicTitle}. 2025 IRS tax year data only. Markdown.`
         : `You are a tax educator for US individual taxpayers. User level: "${levelLabel}". Use 2024 IRS tax year data ONLY. Cite IRS sources. Markdown format. Be accurate.`;
 
       if (financialContext) {

@@ -16,10 +16,11 @@ export function WelcomeScreen({ onSelect }: WelcomeScreenProps) {
           Taxes, Explained For Humans
         </h1>
         <p className="text-tax-muted text-[13px] mt-1.5 font-sans max-w-[420px] mx-auto">
-          Personalized, legally accurate guidance built from official IRS data.
+          We&apos;ll walk you through your taxes step by step, figure out if you&apos;re
+          getting money back or if you owe, and explain everything in plain English.
         </p>
         <div className="text-[10px] text-tax-dim font-mono mt-1.5">
-          2024 Tax Year &bull; IRS Rev. Proc. 2023-34 &bull; Filed in 2025
+          2025 Tax Year &bull; Filed in 2026
         </div>
       </div>
 

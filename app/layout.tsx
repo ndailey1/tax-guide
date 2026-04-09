@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Taxes, Explained For Humans | 2024 Tax Guide",
+  title: "Taxes, Explained For Humans | 2025 Tax Guide",
   description:
     "Personalized, legally accurate tax guidance built from official IRS data. Understand brackets, deductions, credits, and more.",
 };

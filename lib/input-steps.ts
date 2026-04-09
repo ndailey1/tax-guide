@@ -1,4 +1,5 @@
 export interface HelpContent {
+  quickAnswer: string;
   what: string;
   where: string;
   howToGet: string;
@@ -27,32 +28,34 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "w2_income",
     question: "How much did you earn from your job(s) this year?",
-    subtext: "This is the total pay from all employers before any taxes were taken out.",
+    subtext: "This is your total pay before taxes were taken out. If you have a form called a \"W-2\" from your employer, it's the number in Box 1. If you don't have it yet, your last pay stub works too.",
     emoji: "\uD83D\uDCBC",
     help: {
-      what: "This is your gross wages, salary, and tips from all jobs. It's the total amount your employer(s) paid you before taxes, insurance, or retirement contributions were taken out.",
-      where: "Look at your W-2 form, Box 1 (\"Wages, tips, other compensation\"). If you had multiple jobs, add up Box 1 from each W-2.",
-      howToGet: "Your employer is required to send you a W-2 by January 31st. Check your email (many are sent electronically), your employer's payroll portal (like ADP, Gusto, or Workday), or your physical mailbox.",
-      dontHave: "Check your last pay stub of the year \u2014 look for \"YTD Gross Pay\" or \"Year-to-Date.\" This will be close to your W-2 amount. You can also log into your payroll portal.",
+      quickAnswer: "W-2 form \u2192 Box 1. Or check your last pay stub for \"YTD Gross Pay.\"",
+      what: "A W-2 is a form your employer sends you every January that shows how much they paid you and how much tax they already sent to the IRS for you. Box 1 on this form shows your total earnings. Think of it as your employer's report card to the IRS about your pay.",
+      where: "Find your W-2 form and look at Box 1 (labeled \"Wages, tips, other compensation\"). It's usually in the top-left area of the form. If you had multiple jobs, add up Box 1 from each W-2.",
+      howToGet: "Your employer must send you a W-2 by January 31st. Check: (1) Your email \u2014 many are sent electronically, (2) Your employer's payroll website (ADP, Gusto, Workday, Paychex), (3) Your physical mailbox. If you can't find it, ask your manager or HR.",
+      dontHave: "No W-2 yet? Check your last pay stub of the year \u2014 look for \"YTD Gross Pay\" or \"Year-to-Date Total.\" This will be very close to your W-2 number. You can also log into your payroll app.",
     },
     fields: [
-      { key: "w2Income", label: "Total wages from all jobs", placeholder: "65,000", type: "dollar" },
+      { key: "w2Income", label: "Total pay from all jobs (before taxes)", placeholder: "45,000", type: "dollar" },
     ],
     showWhen: (s) => s.includes("employed_w2"),
   },
   {
     id: "w2_withholding",
-    question: "How much federal tax was already taken out of your paychecks?",
-    subtext: "Your employer withholds (takes out) taxes from each paycheck throughout the year. This is the total they sent to the IRS on your behalf.",
+    question: "How much tax did your employer already send to the IRS for you?",
+    subtext: "Every paycheck, your employer takes out some money for federal taxes and sends it to the IRS. This is the total they sent. At tax time, we check if they sent too much (you get money back!) or too little (you owe a bit more).",
     emoji: "\uD83C\uDFE6",
     help: {
-      what: "Every paycheck, your employer takes out a portion for federal income tax and sends it to the IRS. At tax time, you're checking whether they took out too much (you get a refund) or too little (you owe more).",
-      where: "Look at your W-2 form, Box 2 (\"Federal income tax withheld\"). Add up Box 2 from all your W-2s if you had multiple jobs.",
-      howToGet: "This comes on the same W-2 form from your employer. Same places to check: email, payroll portal, or mailbox.",
-      dontHave: "Check your last pay stub \u2014 look for \"YTD Federal Tax\" or \"Federal Withholding YTD.\" Your payroll portal will also show this under tax summaries.",
+      quickAnswer: "W-2 form \u2192 Box 2. Or check your last pay stub for \"YTD Federal Tax.\"",
+      what: "When you got hired, you filled out a form called a W-4 that told your employer how much tax to take from each paycheck. That money goes straight to the IRS throughout the year. Filing your tax return is basically checking their math \u2014 did they send too much (refund!) or not enough (you owe)?",
+      where: "Same W-2 form, Box 2 (labeled \"Federal income tax withheld\"). It's right next to Box 1. If you had multiple jobs, add up Box 2 from each W-2.",
+      howToGet: "It's on the same W-2 from your employer. Check the same places: email, payroll portal, or mailbox.",
+      dontHave: "Check your last pay stub \u2014 look for \"YTD Federal Tax\" or \"Federal Withholding YTD\" or \"Fed Income Tax YTD.\" Your payroll app will also show this.",
     },
     fields: [
-      { key: "w2Withholding", label: "Federal tax withheld", placeholder: "8,500", type: "dollar" },
+      { key: "w2Withholding", label: "Federal tax already paid (from your W-2, Box 2)", placeholder: "5,500", type: "dollar" },
     ],
     showWhen: (s) => s.includes("employed_w2"),
   },
@@ -64,6 +67,7 @@ export const INPUT_STEPS: InputStep[] = [
     subtext: "This is the total amount clients or customers paid you before you subtract any business expenses.",
     emoji: "\uD83C\uDFD7\uFE0F",
     help: {
+      quickAnswer: "Add up all 1099-NEC forms, plus any payments you received without a form.",
       what: "This is the total money you received for freelance, contract, or self-employment work. It includes cash, checks, direct deposits, and payments through apps like Venmo or PayPal for business services.",
       where: "Each client who paid you $600+ should send a 1099-NEC form. Add up the amounts from all your 1099-NEC forms. Also include any income under $600 per client \u2014 it's still taxable even without a form.",
       howToGet: "Clients must send 1099-NEC forms by January 31st. Check your email and mailbox. If a client paid you through a platform (Upwork, Fiverr, etc.), you may get a 1099-K from the platform instead.",
@@ -80,6 +84,7 @@ export const INPUT_STEPS: InputStep[] = [
     subtext: "Rideshare driving, deliveries, selling online, tutoring \u2014 any extra income outside a regular job.",
     emoji: "\uD83D\uDE97",
     help: {
+      quickAnswer: "Check each gig app's \"Tax Documents\" section for your annual total.",
       what: "Any money you earned from gig platforms (Uber, DoorDash, Etsy, etc.), freelance side projects, or selling goods/services on the side. This is the total before expenses.",
       where: "Gig platforms send a 1099-K if you earned $5,000+. Check each app's tax documents section (usually under Settings or Account). Also add any cash or direct payments.",
       howToGet: "Log into each gig platform and look for \"Tax Documents\" or \"1099\" in your account settings. Most platforms make these available by January 31st.",
@@ -93,9 +98,10 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "business_expenses",
     question: "How much did you spend on your business this year?",
-    subtext: "Business expenses reduce your taxable self-employment income. Only include expenses that were necessary for your work.",
+    subtext: "Money you spent to do your work (supplies, software, tools) reduces the income you're taxed on. Only count things you bought for work, not personal stuff.",
     emoji: "\uD83D\uDCDD",
     help: {
+      quickAnswer: "Add up business purchases from your bank/credit card statements.",
       what: "These are costs you paid to run your business or do your gig work: supplies, software, advertising, professional services, phone/internet (business portion), equipment, etc. This does NOT include personal expenses.",
       where: "Review your bank/credit card statements for business purchases. If you use accounting software (QuickBooks, Wave), run an expense report. Keep receipts for purchases over $75.",
       howToGet: "You track these yourself. Go through your bank statements month by month and flag business purchases. Common categories: supplies, software, advertising, professional fees, phone/internet (business %), insurance.",
@@ -109,9 +115,10 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "business_mileage",
     question: "How many miles did you drive for business this year?",
-    subtext: "If you drove for work (client visits, deliveries, NOT commuting), each mile is worth a $0.67 deduction.",
+    subtext: "If you drove for work (client visits, deliveries, NOT commuting to an office), each mile saves you about $0.67 in taxes.",
     emoji: "\uD83D\uDE99",
     help: {
+      quickAnswer: "Check your mileage app, or your gig app's driver tax summary.",
       what: "Business miles include driving to client sites, making deliveries, going to the office supply store, or any driving required for your self-employment. Commuting from home to a regular office does NOT count. But if you work from home, drives to client meetings DO count.",
       where: "Check your mileage tracking app (Everlance, MileIQ, Stride). If you drive for Uber/Lyft/DoorDash, the app tracks business miles for you \u2014 check your annual tax summary.",
       howToGet: "If you don't have a mileage tracker, you can reconstruct from your calendar (appointments with locations) and Google Maps timeline. Going forward, start using a free mileage app.",
@@ -127,9 +134,10 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "investment_income",
     question: "How much did you make (or lose) from investments?",
-    subtext: "This includes stocks, crypto, mutual funds \u2014 only count what you actually sold, not what's still in your account.",
+    subtext: "This includes stocks, crypto, mutual funds \u2014 only count what you actually sold, not what's still sitting in your account going up or down.",
     emoji: "\uD83D\uDCC8",
     help: {
+      quickAnswer: "Check your brokerage app (Robinhood, Fidelity, Coinbase, etc.) under \"Tax Documents\" for your 1099-B.",
       what: "When you sell a stock, crypto, or other investment for more than you paid, that profit is a \"capital gain.\" If you sold for less, it's a \"capital loss.\" You only owe tax when you sell \u2014 just holding an investment that went up doesn't count.",
       where: "Your brokerage (Fidelity, Schwab, Robinhood, Coinbase, etc.) sends a 1099-B form showing all sales. Look for \"Total long-term gain/loss\" and \"Total short-term gain/loss\" in your tax documents.",
       howToGet: "Log into your brokerage account and look for \"Tax Documents\" or \"Tax Center.\" 1099-B forms are usually available by mid-February. Crypto exchanges also provide these.",
@@ -151,6 +159,7 @@ export const INPUT_STEPS: InputStep[] = [
     subtext: "Total rent collected minus expenses like mortgage, repairs, property management, and insurance on the rental.",
     emoji: "\uD83D\uDD11",
     help: {
+      quickAnswer: "Rent collected minus rental expenses (mortgage, repairs, insurance, management fees).",
       what: "Net rental income is the rent you collected minus allowable expenses: mortgage interest on the rental, property taxes, repairs, insurance, management fees, and depreciation. If expenses exceeded rent, you may have a rental loss.",
       where: "You track this yourself using rental records. If you use a property manager, they should provide an annual statement. Key expenses: mortgage interest (Form 1098), property tax bills, repair receipts.",
       howToGet: "Gather: total rent collected (bank deposits from tenants), mortgage statements for the rental, property tax bills, repair/maintenance receipts, insurance premiums, and property management invoices.",
@@ -169,6 +178,7 @@ export const INPUT_STEPS: InputStep[] = [
     subtext: "Social Security benefits, pension payments, or withdrawals from retirement accounts like 401(k) or IRA.",
     emoji: "\uD83C\uDFD6\uFE0F",
     help: {
+      quickAnswer: "SSA-1099 for Social Security, 1099-R for pensions/retirement withdrawals.",
       what: "This includes Social Security benefits, pension payments, and any money you withdrew from retirement accounts (401k, IRA, 403b). Note: up to 85% of Social Security may be taxable depending on your total income.",
       where: "Social Security: SSA-1099 (mailed or at ssa.gov). Pensions/401k/IRA withdrawals: 1099-R from each plan administrator. Box 1 shows the gross distribution.",
       howToGet: "SSA-1099 is available at my Social Security (ssa.gov) by February. 1099-R comes from your former employer's plan administrator or your IRA custodian by January 31st.",
@@ -184,9 +194,10 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "unemployment_income",
     question: "How much did you receive in unemployment benefits?",
-    subtext: "Unemployment benefits are taxable income. Many people don't realize this and get surprised at tax time.",
+    subtext: "Yes, unemployment money is taxable \u2014 many people don't realize this and get surprised at tax time.",
     emoji: "\uD83D\uDCCB",
     help: {
+      quickAnswer: "Form 1099-G from your state unemployment agency, Box 1.",
       what: "Unemployment compensation is fully taxable by the federal government. This includes regular state unemployment, federal extended benefits, and pandemic unemployment. You may have opted to have tax withheld from payments.",
       where: "Your state unemployment agency sends Form 1099-G. Box 1 shows total unemployment paid, Box 4 shows any federal tax withheld.",
       howToGet: "Log into your state's unemployment website \u2014 the 1099-G is usually available for download in January. It may also be mailed to you. Search \"[your state] unemployment 1099-G\" for the specific portal.",
@@ -202,9 +213,10 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "gambling_income",
     question: "How much did you win from gambling this year?",
-    subtext: "All gambling winnings are taxable \u2014 casinos, sports betting, lottery, poker. Losses can offset wins but only if you itemize.",
+    subtext: "All gambling winnings are taxable \u2014 casinos, sports betting apps, lottery, poker. Even if you lost money overall, you still report the wins.",
     emoji: "\uD83C\uDFB0",
     help: {
+      quickAnswer: "Check your betting apps for win/loss statements, or W-2G forms for large wins.",
       what: "Any money won gambling is taxable: casino games, sports bets, lottery tickets, poker tournaments, fantasy sports, bingo, raffles. This means the total amount won, not just the net profit.",
       where: "Large wins generate a W-2G form: $1,200+ from slots/bingo, $1,500+ from keno, $5,000+ from poker tournaments, $600+ from other gambling if the payout is 300x+ the wager.",
       howToGet: "Casinos and gambling platforms issue W-2G forms for qualifying wins. For sports betting apps (DraftKings, FanDuel, etc.), check your account's tax documents section.",
@@ -219,10 +231,11 @@ export const INPUT_STEPS: InputStep[] = [
   // --- Dependents ---
   {
     id: "dependents",
-    question: "How many dependents do you support?",
-    subtext: "Dependents can qualify you for valuable tax credits worth thousands of dollars.",
+    question: "How many people depend on you financially?",
+    subtext: "Kids, elderly parents, or other family members you support can save you thousands in taxes.",
     emoji: "\uD83D\uDC76",
     help: {
+      quickAnswer: "Count children under 17 who live with you, and anyone else you financially support.",
       what: "A dependent is someone who relies on you for financial support. Children under 17 qualify for the Child Tax Credit ($2,000 each). Other dependents (older children, elderly parents, etc.) qualify for a smaller $500 credit.",
       where: "You'll need each dependent's name, date of birth, Social Security number, and relationship to you. No special form \u2014 this comes from your own family records.",
       howToGet: "You should have this information already. If you need a dependent's SSN, check their Social Security card, prior tax returns, or request a replacement at ssa.gov.",
@@ -239,9 +252,10 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "homeowner_deductions",
     question: "How much did you pay in mortgage interest and property taxes?",
-    subtext: "These are two of the biggest potential tax deductions for homeowners.",
+    subtext: "These are two of the biggest potential tax savings for homeowners. Your mortgage company tracks both for you.",
     emoji: "\uD83C\uDFE0",
     help: {
+      quickAnswer: "Form 1098 from your mortgage company \u2192 Box 1 (interest) and Box 10 (property taxes).",
       what: "Mortgage interest is what the bank charges you to borrow money for your home. Property taxes are what your county/city charges based on your home's value. Both are deductible, but only if you itemize (and the total beats your standard deduction).",
       where: "Mortgage interest: Form 1098 from your lender, Box 1. Property taxes: Form 1098 Box 10, or your county tax assessor's annual statement. Some lenders pay property taxes from escrow and include it on the 1098.",
       howToGet: "Your mortgage company sends Form 1098 by January 31st. Check your lender's website or app under \"Tax Documents.\" For property taxes, check your county assessor's website or look at escrow statements.",
@@ -258,9 +272,10 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "state_taxes",
     question: "How much did you pay in state and local income taxes?",
-    subtext: "If you live in a state with income tax, what you paid can be deducted (along with property taxes, up to $10,000 total).",
+    subtext: "Some states tax your income too (on top of federal). If yours does, that amount can reduce your federal taxes.",
     emoji: "\uD83C\uDFDB\uFE0F",
     help: {
+      quickAnswer: "W-2 \u2192 Box 17. Or $0 if you live in TX, FL, WA, NV, TN, WY, SD, AK, or NH.",
       what: "State income tax is what your state charges on your earnings (some states have none). Combined with property taxes, you can deduct up to $10,000 total (the \"SALT cap\"). This is a big deal if you live in a high-tax state.",
       where: "W-2, Box 17 shows state income tax withheld. If you made estimated state tax payments, add those too. Your prior year's state tax return may also show a payment you made.",
       howToGet: "Your W-2 has state tax withheld. If you paid estimated state taxes, check your bank records for those payments. Prior year state refunds may need to be added to income.",
@@ -276,9 +291,10 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "charitable",
     question: "How much did you donate to charity?",
-    subtext: "Cash donations to qualified nonprofits can be deducted if you itemize.",
+    subtext: "Donations to registered nonprofits (churches, Red Cross, etc.) can reduce your taxes. GoFundMe and political donations don't count.",
     emoji: "\u2764\uFE0F",
     help: {
+      quickAnswer: "Check your email for donation receipts, or your bank statements for payments to charities.",
       what: "Deductible donations include cash, checks, or credit card gifts to qualified 501(c)(3) organizations. This includes churches, nonprofits, and charitable foundations. Political donations and GoFundMe contributions are NOT deductible.",
       where: "Check your email/mail for donation receipts and thank-you letters from charities. For donations of $250+, you MUST have a written acknowledgment from the organization.",
       howToGet: "Contact charities you donated to and request a receipt or year-end giving statement. Many organizations email annual giving summaries in January.",
@@ -294,9 +310,10 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "medical",
     question: "How much did you spend on medical and dental expenses?",
-    subtext: "Only the amount that exceeds 7.5% of your income is deductible, so this helps most when expenses are very large.",
+    subtext: "This only helps if your medical costs were really high (more than 7.5% of your income). Include insurance premiums you paid yourself, copays, prescriptions, dental, and vision.",
     emoji: "\uD83C\uDFE5",
     help: {
+      quickAnswer: "Check your insurance portal for a claims summary, plus receipts for out-of-pocket costs.",
       what: "Deductible medical expenses include health insurance premiums (if not pre-tax), copays, prescriptions, dental work, vision care, surgeries, and medical equipment. Cosmetic procedures generally don't count.",
       where: "Your health insurance company may send an annual summary. Otherwise, gather: insurance premium statements, pharmacy receipts, doctor/dentist bills, hospital bills, and receipts for glasses/contacts.",
       howToGet: "Log into your health insurance portal for claims summaries. Check your pharmacy (CVS, Walgreens) for annual prescription spending. Gather bills from any major procedures or dental work.",
@@ -312,10 +329,11 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "student_loans",
     question: "How much student loan interest did you pay this year?",
-    subtext: "You can deduct up to $2,500 in student loan interest \u2014 and you don't need to itemize to claim this.",
+    subtext: "Just the interest part of your payments (not the full payment). This can save you money on taxes even if you don't have a lot of other deductions.",
     emoji: "\uD83C\uDF92",
     help: {
-      what: "The interest portion (not principal) of your student loan payments is deductible up to $2,500. This is an \"above-the-line\" deduction, meaning you get it even if you take the standard deduction. This is a common one people miss.",
+      quickAnswer: "Form 1098-E from your loan servicer (Nelnet, MOHELA, etc.), Box 1.",
+      what: "Part of each student loan payment goes to interest (the fee for borrowing) and part goes to the actual loan balance. Only the interest part is deductible, up to $2,500. The great news: you get this tax break automatically \u2014 you don't need to do anything special to claim it.",
       where: "Your loan servicer sends Form 1098-E. Box 1 shows total interest paid. If you have multiple servicers, add up Box 1 from each.",
       howToGet: "Log into your student loan servicer's website (Nelnet, MOHELA, Navient, etc.) and check for tax forms or a 1098-E. Most are available by January 31st in the tax documents section.",
       dontHave: "Log into your loan servicer's portal and look for an interest summary or tax documents section. Your monthly statements also show interest paid \u2014 add up the interest portion from each payment.",
@@ -329,10 +347,11 @@ export const INPUT_STEPS: InputStep[] = [
   // --- Retirement contributions ---
   {
     id: "retirement_contributions",
-    question: "How much did you contribute to retirement accounts?",
-    subtext: "401(k) and traditional IRA contributions reduce your taxable income. This is one of the best ways to lower your tax bill.",
+    question: "How much did you put into retirement savings?",
+    subtext: "If your employer offers a 401(k) and you contribute, that money comes out before taxes \u2014 which means less of your income gets taxed. Same with a traditional IRA.",
     emoji: "\uD83C\uDFE6",
     help: {
+      quickAnswer: "401(k): W-2 \u2192 Box 12, Code D. IRA: Check your brokerage account (Fidelity, Vanguard, etc.).",
       what: "Pre-tax retirement contributions directly reduce your taxable income. 401(k) contributions come out of your paycheck before taxes. Traditional IRA contributions are deducted on your return. Roth contributions do NOT reduce your current taxes (they're tax-free later instead).",
       where: "401(k)/403(b): Your W-2, Box 12, Code D (or E for 403b). Traditional IRA: Your IRA custodian's annual contribution statement. HSA: Form 5498-SA or your HSA provider's dashboard.",
       howToGet: "401(k) contributions are on your W-2 automatically. For IRA contributions, check with your brokerage (Fidelity, Vanguard, Schwab). For HSA, check your HSA provider's portal.",
@@ -348,10 +367,11 @@ export const INPUT_STEPS: InputStep[] = [
   // --- HSA ---
   {
     id: "hsa",
-    question: "How much did you contribute to your HSA or FSA?",
-    subtext: "Health Savings Accounts are triple tax-advantaged: tax-free going in, growing, and coming out for medical expenses.",
+    question: "How much did you put into your HSA?",
+    subtext: "An HSA (Health Savings Account) is a special account for medical expenses. Money you put in isn't taxed, it grows tax-free, and you don't pay tax when you use it for medical costs.",
     emoji: "\uD83D\uDC8A",
     help: {
+      quickAnswer: "Check your HSA provider's app/website (HealthEquity, Fidelity, Optum) for your contribution total.",
       what: "HSA (Health Savings Account) contributions reduce your taxable income if you have a high-deductible health plan. FSA (Flexible Spending Account) contributions are usually taken pre-tax from your paycheck and already excluded from your W-2 wages.",
       where: "HSA: Form 5498-SA from your HSA provider, or check your HSA portal. FSA: Usually already excluded from W-2 Box 1. Check your benefits portal to confirm your election amount.",
       howToGet: "Log into your HSA provider (HealthEquity, Fidelity, Optum, etc.) for contribution details. FSA contributions are typically handled through your employer's benefits system.",
@@ -367,9 +387,10 @@ export const INPUT_STEPS: InputStep[] = [
   {
     id: "home_office",
     question: "How large is your home office?",
-    subtext: "If you're self-employed and use part of your home exclusively for business, you can deduct $5 per square foot (up to 300 sq ft).",
+    subtext: "If you're self-employed and have a space at home used only for work, you get $5 back for each square foot (up to 300 sq ft = $1,500).",
     emoji: "\uD83D\uDCBB",
     help: {
+      quickAnswer: "Measure your office: length \u00D7 width = square feet. A typical bedroom office is 100-150 sq ft.",
       what: "The home office deduction is for self-employed people who use a dedicated space in their home regularly and exclusively for business. W-2 employees do NOT qualify. The space must be used only for work \u2014 a kitchen table doesn't count, but a spare bedroom used as an office does.",
       where: "Measure your dedicated office space. The simplified method is $5 per square foot, up to 300 square feet ($1,500 max). You don't need receipts for this method.",
       howToGet: "Measure the room or area you use exclusively for work. Length \u00D7 width = square feet. A typical spare bedroom is 100-150 sq ft. A large dedicated office might be 200-300 sq ft.",

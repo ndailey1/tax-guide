@@ -13,7 +13,7 @@ export const FILING_STATUSES: FilingStatus[] = [
   { id: "married_jointly", label: "Married Filing Jointly", desc: "Married, combining income on one return" },
   { id: "married_separately", label: "Married Filing Separately", desc: "Married but filing individual returns" },
   { id: "head_of_household", label: "Head of Household", desc: "Unmarried, pay >50% home costs for qualifying dependent" },
-  { id: "widow", label: "Qualifying Surviving Spouse", desc: "Spouse died in 2022/2023, have dependent child" },
+  { id: "widow", label: "Qualifying Surviving Spouse", desc: "Spouse died in 2023/2024, have dependent child" },
 ];
 
 export const LIFE_SITUATIONS: LifeSituation[] = [
@@ -89,7 +89,7 @@ export function buildTopics(level: string, fs: string, situations: string[]): To
     ["Head of Household, 65+", fmtD(TAX_DATA.filingThresholds.head_of_household_65plus)],
   ];
   const filingSections: Section[] = [
-    { type: "table", title: "2024 Filing Thresholds (Gross Income)", rows: threshRows },
+    { type: "table", title: "2025 Filing Thresholds (Gross Income)", rows: threshRows },
   ];
   if (s.has("self_employed") || s.has("side_hustle")) {
     filingSections.push({
@@ -165,7 +165,7 @@ export function buildTopics(level: string, fs: string, situations: string[]): To
     sections: [
       {
         type: "table",
-        title: `2024 Federal Brackets \u2014 ${fs.replace(/_/g, " ")}`,
+        title: `2025 Federal Brackets \u2014 ${fs.replace(/_/g, " ")}`,
         rows: bracketRows,
         headers: ["Taxable Income", "Rate"],
       },
@@ -188,7 +188,7 @@ export function buildTopics(level: string, fs: string, situations: string[]): To
     ["Additional if 65+ (single)", `+${fmtD(TAX_DATA.standardDeduction.additional_65_single)}`],
     ["Additional if 65+ (married/spouse)", `+${fmtD(TAX_DATA.standardDeduction.additional_65_married)}`],
   ];
-  const dedSections: Section[] = [{ type: "table", title: "2024 Standard Deduction", rows: sdTable }];
+  const dedSections: Section[] = [{ type: "table", title: "2025 Standard Deduction", rows: sdTable }];
   const itemized: string[][] = [];
   if (s.has("homeowner")) itemized.push(["Mortgage Interest", `On up to ${fmtD(d.mortgageDebtLimit)} of debt`]);
   itemized.push(["State & Local Taxes (SALT)", `Capped at ${fmtD(d.saltCap)}`]);
@@ -291,7 +291,7 @@ export function buildTopics(level: string, fs: string, situations: string[]): To
       sections: [
         {
           type: "table",
-          title: "Self-Employment Tax (2024)",
+          title: "Self-Employment Tax (2025)",
           rows: [
             ["Social Security", `${pct(se.ssTaxRate)} on first ${fmtD(se.ssWageBase)}`],
             ["Medicare", `${pct(se.medicareTaxRate)} on all net earnings`],
@@ -371,7 +371,7 @@ export function buildTopics(level: string, fs: string, situations: string[]): To
       sections: [
         {
           type: "table",
-          title: "2024 Contribution Limits",
+          title: "2025 Contribution Limits",
           rows: [
             ["401(k)/403(b)", `${fmtD(d.k401Limit)} (+${fmtD(d.k401CatchUp50)} if 50+)`],
             ["Traditional/Roth IRA", `${fmtD(d.iraMax)} (+${fmtD(d.iraCatchUp50)} if 50+)`],

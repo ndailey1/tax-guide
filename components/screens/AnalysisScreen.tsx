@@ -158,8 +158,8 @@ export function AnalysisScreen({
             </div>
             <p className="text-sm text-tax-muted font-sans">
               {isRefund
-                ? "Estimated refund \u2014 you overpaid through withholding"
-                : "Estimated amount owed \u2014 your withholding didn't cover your full tax bill"}
+                ? "Estimated refund \u2014 your employer sent more tax to the IRS than you actually owe, so you get the difference back"
+                : "Estimated amount owed \u2014 your employer didn't send quite enough tax to the IRS, so you owe the difference"}
             </p>
           </>
         ) : (
@@ -210,9 +210,9 @@ export function AnalysisScreen({
 
       {/* Adjustments */}
       {calc.totalAdjustments > 0 && (
-        <Section title="Above-the-Line Deductions" emoji="&#x2B06;">
+        <Section title="Extra Reductions You Automatically Get" emoji="&#x2B06;">
           <p className="text-xs text-tax-muted font-sans mb-2">
-            These reduce your income before the standard/itemized deduction is applied. You get these no matter what.
+            These reduce your income before anything else. You get these automatically \u2014 no special filing needed.
           </p>
           {calc.halfSETax > 0 && (
             <Row label="Half of self-employment tax" value={`-${fmtD(Math.round(calc.halfSETax))}`} indent highlight="green" />
@@ -227,7 +227,7 @@ export function AnalysisScreen({
             <Row label="IRA contributions" value={`-${fmtD(Math.round(calc.iraDeduction))}`} indent highlight="green" />
           )}
           <Row
-            label="Adjusted Gross Income (AGI)"
+            label="Your income after reductions"
             value={fmtD(Math.round(calc.agi))}
             bold
             highlight="accent"
@@ -236,7 +236,7 @@ export function AnalysisScreen({
       )}
 
       {/* Deductions */}
-      <Section title="Your Deduction" emoji="&#x2702;&#xFE0F;">
+      <Section title="Your Tax-Free Amount" emoji="&#x2702;&#xFE0F;">
         <div className="bg-tax-surface-alt border border-tax-border rounded-lg p-3 mb-3">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs font-bold text-tax-text font-sans">Standard deduction</span>
@@ -281,7 +281,7 @@ export function AnalysisScreen({
       {/* Tax calculation */}
       <Section title="How Your Tax Is Calculated" emoji="&#x1F4CA;">
         <p className="text-xs text-tax-muted font-sans mb-2">
-          Your income is taxed in layers. Each bracket only applies to income in that range.
+          Your income is taxed in layers, not all at one rate. The first chunk is taxed at 10%, the next chunk at 12%, and so on. Only the money in each range gets that rate.
         </p>
         <BracketBar calc={calc} />
         {calc.bracketBreakdown.map((b, i) => (
@@ -352,7 +352,7 @@ export function AnalysisScreen({
         onClick={onContinueToGuide}
         className="w-full py-3.5 rounded-lg border-none bg-tax-accent text-white text-sm font-bold font-sans cursor-pointer"
       >
-        Continue to Your Detailed Tax Guide &rarr;
+        Learn More About Each Topic &rarr;
       </button>
     </div>
   );

@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { FinancialProfile } from "@/lib/financial-profile";
 import { calculateTax } from "@/lib/financial-profile";
 import { TAX_DATA, fmtD } from "@/lib/tax-data";
+import { ProgressBar } from "@/components/ui/ProgressBar";
+import { Confetti } from "@/components/ui/Confetti";
 
 interface ActionPlanScreenProps {
   profile: FinancialProfile;
@@ -14,6 +16,7 @@ interface ActionPlanScreenProps {
 }
 
 interface Step {
+  question: string;
   title: string;
   why: string;
   instructions: string[];
@@ -73,6 +76,7 @@ function buildSteps(
   }
 
   steps.push({
+    question: "Did you gather all your tax documents?",
     title: "Gather your documents",
     why: "Before you can do anything, you need the paperwork. Most of these are sent to you automatically \u2014 check your email, mail, and the apps/websites listed below.",
     instructions: docs,
@@ -113,6 +117,7 @@ function buildSteps(
   }
 
   steps.push({
+    question: "Did you decide how you're going to file?",
     title: "Choose how you'll file",
     why: isComplex
       ? "With self-employment or investment income, a professional or good software will catch deductions you'd miss on your own. They often pay for themselves."
@@ -165,6 +170,7 @@ function buildSteps(
     : undefined;
 
   steps.push({
+    question: "Did you file your federal tax return?",
     title: "File your federal tax return",
     why: "This is the main event. The software walks you through it \u2014 you're basically answering questions and typing numbers from your documents.",
     instructions: federalInstructions,
@@ -178,6 +184,7 @@ function buildSteps(
   // STEP 4: FILE STATE RETURN
   // =====================
   steps.push({
+    question: "Did you file your state tax return?",
     title: "File your state tax return",
     why: "Most states require a separate tax return in addition to the federal one. The good news: most of the info carries over from your federal return.",
     instructions: [
@@ -248,6 +255,7 @@ function buildSteps(
 
   if (moneySavers.length > 0) {
     steps.push({
+      question: "Did you check for extra savings and credits?",
       title: "Don't leave money on the table",
       why: "These are specific things that could save you money \u2014 either on this year's return or next year's.",
       instructions: moneySavers,
@@ -259,6 +267,7 @@ function buildSteps(
   // STEP 6: KEEP RECORDS
   // =====================
   steps.push({
+    question: "Did you save copies of everything?",
     title: "Save everything for 3 years",
     why: "The IRS can audit you for up to 3 years (6 years if something is way off). Keep your records in case they ask questions.",
     instructions: [
@@ -291,21 +300,61 @@ export function ActionPlanScreen({
 
   const isRefund = calc.totalWithholding > 0 && calc.estimatedRefundOrOwed >= 0;
 
+  const [checked, setChecked] = useState<Set<number>>(new Set());
+  const [expanded, setExpanded] = useState<Set<number>>(new Set([0])); // first one open by default
+
+  const toggleCheck = (i: number) => {
+    setChecked((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) {
+        next.delete(i);
+      } else {
+        next.add(i);
+        // Auto-expand the next unchecked step
+        const nextStep = steps.findIndex((_, idx) => idx > i && !next.has(idx));
+        if (nextStep !== -1) {
+          setExpanded((prev) => {
+            const e = new Set(prev);
+            e.add(nextStep);
+            return e;
+          });
+        }
+      }
+      return next;
+    });
+  };
+
+  const toggleExpand = (i: number) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
+  };
+
+  const allDone = checked.size === steps.length;
+
   return (
     <div className="max-w-[640px] mx-auto animate-screen-up">
+      <Confetti active={allDone} />
+
       {/* Header */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-5">
         <div className="text-[48px] mb-2 animate-emoji">&#x1F3AF;</div>
         <h1 className="text-[26px] font-extrabold text-tax-text font-serif mb-2">
-          Here&apos;s Exactly What To Do
+          Your Tax Checklist
         </h1>
         <p className="text-[14px] text-tax-muted font-sans max-w-[480px] mx-auto leading-relaxed">
-          Follow these steps in order. Each one tells you exactly where to go and what to click.
+          Check off each step as you complete it. Tap any item to see exactly what to do.
         </p>
         <p className="text-[12px] text-tax-dim font-sans italic mt-1">
           Here&apos;s the part where we actually tell you what to do (instead of just scaring you with numbers).
         </p>
       </div>
+
+      {/* Progress */}
+      <ProgressBar current={checked.size} total={steps.length} />
 
       {/* Deadline callout */}
       <div className="bg-tax-orange-dim border border-tax-orange/20 rounded-xl p-4 mb-5 animate-reveal">
@@ -323,95 +372,165 @@ export function ActionPlanScreen({
         </p>
       </div>
 
-      {/* Steps */}
-      {steps.map((step, i) => (
-        <div
-          key={i}
-          className={`mb-4 animate-card delay-${Math.min(i, 12)}`}
-        >
-          {/* Step number */}
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-tax-accent flex items-center justify-center mt-0.5">
-              <span className="text-[14px] font-bold text-white font-mono">{i + 1}</span>
-            </div>
-            <div className="flex-1">
-              <h3 className="text-[16px] font-bold text-tax-text font-sans mb-1">
-                {step.title}
-              </h3>
-              <p className="text-[13px] text-tax-muted font-sans leading-relaxed mb-3">
-                {step.why}
-              </p>
-            </div>
-          </div>
+      {/* Checklist steps */}
+      {steps.map((step, i) => {
+        const isDone = checked.has(i);
+        const isOpen = expanded.has(i);
 
-          {/* Instructions */}
-          <div className="ml-11 bg-tax-surface border border-tax-border rounded-xl p-4 mb-2">
-            <div className="flex flex-col gap-2.5">
-              {step.instructions.map((instruction, j) => (
-                <div key={j} className="flex gap-2.5 items-start">
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full border-[1.5px] border-tax-border flex items-center justify-center mt-0.5">
-                    <span className="text-[9px] text-tax-muted font-mono">{j + 1}</span>
-                  </div>
-                  <p className="text-[13px] text-tax-text font-sans leading-relaxed">
-                    {instruction}
+        return (
+          <div
+            key={i}
+            className={`mb-3 animate-card delay-${Math.min(i, 12)} transition-all duration-300`}
+          >
+            {/* Checkable header */}
+            <div
+              className={`flex items-center gap-3 p-4 rounded-xl border transition-all duration-200 cursor-pointer btn-press ${
+                isDone
+                  ? "bg-tax-green-dim border-tax-green/30"
+                  : "bg-tax-surface border-tax-border"
+              }`}
+              onClick={() => toggleExpand(i)}
+            >
+              {/* Checkbox */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleCheck(i);
+                }}
+                className={`flex-shrink-0 w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${
+                  isDone
+                    ? "bg-tax-green border-tax-green"
+                    : "border-tax-border-light bg-transparent hover:border-tax-accent"
+                }`}
+              >
+                {isDone && (
+                  <span className="text-white text-sm font-bold">&#x2713;</span>
+                )}
+              </button>
+
+              {/* Question */}
+              <div className="flex-1">
+                <p className={`text-[14px] font-semibold font-sans transition-all ${
+                  isDone ? "text-tax-green line-through" : "text-tax-text"
+                }`}>
+                  {step.question}
+                </p>
+                {!isOpen && !isDone && (
+                  <p className="text-[11px] text-tax-muted font-sans mt-0.5">
+                    Tap to see how
                   </p>
-                </div>
-              ))}
+                )}
+              </div>
+
+              {/* Expand indicator */}
+              <span
+                className={`text-tax-muted text-sm transition-transform duration-200 ${
+                  isOpen ? "rotate-90" : ""
+                }`}
+              >
+                &#x25B6;
+              </span>
             </div>
 
-            {/* Tip */}
-            {step.tip && (
-              <div className="mt-3 pt-3 border-t border-tax-border">
-                <p className="text-[12px] text-tax-green font-sans leading-relaxed">
-                  <strong>&#x1F4A1; Tip:</strong> {step.tip}
+            {/* Expandable detail */}
+            {isOpen && (
+              <div className="ml-4 mr-1 mt-2 animate-screen">
+                {/* Step title and explanation */}
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-tax-accent flex items-center justify-center">
+                    <span className="text-[11px] font-bold text-white font-mono">{i + 1}</span>
+                  </div>
+                  <h3 className="text-[14px] font-bold text-tax-accent font-sans">
+                    {step.title}
+                  </h3>
+                </div>
+                <p className="text-[12px] text-tax-muted font-sans leading-relaxed mb-3 ml-8">
+                  {step.why}
                 </p>
-              </div>
-            )}
 
-            {/* Warning */}
-            {step.warning && (
-              <div className="mt-3 pt-3 border-t border-tax-border">
-                <p className="text-[12px] text-tax-orange font-sans leading-relaxed">
-                  <strong>&#x26A0;&#xFE0F; Heads up:</strong> {step.warning}
-                </p>
-              </div>
-            )}
+                {/* Instructions */}
+                <div className="ml-4 bg-tax-surface-alt border border-tax-border rounded-xl p-4">
+                  <div className="flex flex-col gap-2.5">
+                    {step.instructions.map((instruction, j) => (
+                      <div key={j} className="flex gap-2.5 items-start">
+                        <div className="flex-shrink-0 w-5 h-5 rounded-full border-[1.5px] border-tax-border flex items-center justify-center mt-0.5">
+                          <span className="text-[9px] text-tax-muted font-mono">{j + 1}</span>
+                        </div>
+                        <p className="text-[13px] text-tax-text font-sans leading-relaxed">
+                          {instruction}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
 
-            {/* Links */}
-            {step.links && step.links.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-tax-border flex flex-col gap-2">
-                {step.links.map((link, k) => (
-                  <a
-                    key={k}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 py-2.5 px-3 bg-tax-accent-dim border border-tax-accent/20 rounded-lg text-[13px] text-tax-accent font-sans font-semibold no-underline hover:bg-tax-accent/20 transition-colors btn-press"
+                  {step.tip && (
+                    <div className="mt-3 pt-3 border-t border-tax-border">
+                      <p className="text-[12px] text-tax-green font-sans leading-relaxed">
+                        <strong>&#x1F4A1; Tip:</strong> {step.tip}
+                      </p>
+                    </div>
+                  )}
+
+                  {step.warning && (
+                    <div className="mt-3 pt-3 border-t border-tax-border">
+                      <p className="text-[12px] text-tax-orange font-sans leading-relaxed">
+                        <strong>&#x26A0;&#xFE0F; Heads up:</strong> {step.warning}
+                      </p>
+                    </div>
+                  )}
+
+                  {step.links && step.links.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-tax-border flex flex-col gap-2">
+                      {step.links.map((link, k) => (
+                        <a
+                          key={k}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 py-2.5 px-3 bg-tax-accent-dim border border-tax-accent/20 rounded-lg text-[13px] text-tax-accent font-sans font-semibold no-underline hover:bg-tax-accent/20 transition-colors btn-press"
+                        >
+                          <span className="text-sm">&#x1F517;</span>
+                          {link.label}
+                          <span className="ml-auto text-tax-muted text-xs">&rarr;</span>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Mark done button inside expanded */}
+                {!isDone && (
+                  <button
+                    onClick={() => toggleCheck(i)}
+                    className="w-full mt-3 py-3 rounded-xl border border-tax-green/30 bg-tax-green-dim text-tax-green text-[13px] font-bold cursor-pointer font-sans btn-press hover:bg-tax-green/20 transition-colors"
                   >
-                    <span className="text-sm">&#x1F517;</span>
-                    {link.label}
-                    <span className="ml-auto text-tax-muted text-xs">&rarr;</span>
-                  </a>
-                ))}
+                    &#x2713; Done &mdash; I did this
+                  </button>
+                )}
               </div>
             )}
           </div>
-        </div>
-      ))}
+        );
+      })}
 
-      {/* Completion message */}
-      <div className="text-center mt-6 mb-4 animate-reveal" style={{ animationDelay: "0.5s" }}>
-        <div className="text-[32px] mb-2">&#x1F389;</div>
-        <p className="text-[15px] font-bold text-tax-text font-sans">
-          That&apos;s it. Seriously. You&apos;re going to be fine.
-        </p>
-        <p className="text-[12px] text-tax-dim font-sans italic mt-1">
-          You now know more about your taxes than most adults. Go you.
-        </p>
-      </div>
+      {/* All done celebration */}
+      {allDone && (
+        <div className="text-center mt-6 mb-4 animate-screen-up">
+          <div className="text-[48px] mb-2">&#x1F389;</div>
+          <h2 className="text-[20px] font-extrabold text-tax-green font-serif mb-2">
+            You did it!
+          </h2>
+          <p className="text-[14px] text-tax-text font-sans">
+            That&apos;s it. Seriously. You&apos;re going to be fine.
+          </p>
+          <p className="text-[12px] text-tax-dim font-sans italic mt-1">
+            You now know more about your taxes than most adults. Go you.
+          </p>
+        </div>
+      )}
 
       {/* Learn more option */}
-      <div className="mt-4 mb-4">
+      <div className="mt-6 mb-4">
         <div className="text-center mb-3">
           <p className="text-[13px] text-tax-muted font-sans">
             Want to understand how taxes work in more detail?
@@ -449,7 +568,6 @@ export function ActionPlanScreen({
         </p>
       </div>
 
-      {/* Source attribution */}
       <div className="text-center mt-4 mb-2">
         <p className="text-[10px] text-tax-dim font-mono">
           Built with IRS data &bull; {TAX_DATA.year} Tax Year &bull; Filed in {TAX_DATA.filingYear}

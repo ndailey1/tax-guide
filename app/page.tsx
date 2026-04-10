@@ -17,8 +17,11 @@ import { DetailScreen } from "@/components/screens/DetailScreen";
 import { ActionPlanScreen } from "@/components/screens/ActionPlanScreen";
 import { SavingsScreen } from "@/components/screens/SavingsScreen";
 import { TaxBasicsScreen } from "@/components/screens/TaxBasicsScreen";
+import { ProfileScreen } from "@/components/screens/ProfileScreen";
+import { emptyUserProfile, derivePersona, getPersonaContext, suggestSituations, type UserProfile } from "@/lib/user-profile";
 
 type Screen =
+  | "profile"
   | "welcome"
   | "tax_basics"
   | "filing"
@@ -31,7 +34,7 @@ type Screen =
   | "action_plan";
 
 export default function TaxGuide() {
-  const [screen, setScreen] = useState<Screen>("welcome");
+  const [screen, setScreen] = useState<Screen>("profile");
   const [level, setLevel] = useState<string | null>(null);
   const [filingStatus, setFilingStatus] = useState<string | null>(null);
   const [situations, setSituations] = useState<string[]>([]);
@@ -40,6 +43,7 @@ export default function TaxGuide() {
   const [completed, setCompleted] = useState<string[]>([]);
   const [activeTopic, setActiveTopic] = useState<string | null>(null);
   const [unknownTerms, setUnknownTerms] = useState<string[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile>(emptyUserProfile());
 
   // AI streaming
   const mainStream = useStreaming();
@@ -96,12 +100,17 @@ export default function TaxGuide() {
         prompt += `\n\nIMPORTANT: This user is new to taxes. Use simple language, avoid jargon, and explain any tax terms when you first use them. Write like you're explaining to a smart friend who has never done taxes before.`;
       }
 
+      // Add persona context for tailored examples
+      if (userProfile.persona && userProfile.persona !== "general") {
+        prompt += `\n\n${getPersonaContext(userProfile.persona, userProfile.state)}`;
+      }
+
       if (financialContext) {
         prompt += `\n\nIMPORTANT: Reference the user's specific financial numbers when explaining concepts. Use their actual income, deductions, and tax amounts to make explanations concrete and personal.\n\n${financialContext}`;
       }
       return prompt;
     },
-    [level, filingStatus, financialContext, unknownTerms]
+    [level, filingStatus, financialContext, unknownTerms, userProfile]
   );
 
   const handleSelectTopic = useCallback(
@@ -166,11 +175,32 @@ export default function TaxGuide() {
 
   return (
     <div className="min-h-screen bg-tax-bg text-tax-text font-sans px-4 py-6 pb-12 sm:px-6">
+      {screen === "profile" && (
+        <ProfileScreen
+          profile={userProfile}
+          onComplete={(up) => {
+            setUserProfile(up);
+            // Pre-select situations based on profile
+            const suggested = suggestSituations(up);
+            if (suggested.length > 0) {
+              setSituations(suggested);
+            }
+            setScreen("welcome");
+          }}
+        />
+      )}
+
       {screen === "welcome" && (
         <WelcomeScreen
           onSelect={(l) => {
             setLevel(l);
-            if (l === "beginner" || l === "passive") {
+            // Update persona now that we have knowledge level
+            const persona = derivePersona(userProfile, l);
+            setUserProfile((prev) => ({ ...prev, persona }));
+            // Derive first-time filer from profile
+            const isBeginner = l === "beginner" || l === "passive";
+            const showBasics = isBeginner || userProfile.isFirstTimeFiler;
+            if (showBasics) {
               setScreen("tax_basics");
             } else {
               setScreen("filing");

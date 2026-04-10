@@ -1,19 +1,32 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import crypto from "crypto";
 
-function verifyToken(token: string): boolean {
+async function verifyToken(token: string): Promise<boolean> {
   const secret = process.env.AUTH_PASSWORD ?? "fallback";
   const parts = token.split(".");
   if (parts.length !== 2) return false;
   const [timestamp, hash] = parts;
-  const expected = crypto.createHmac("sha256", secret).update(timestamp).digest("hex");
+
+  // Use Web Crypto API (Edge Runtime compatible)
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(timestamp));
+  const expected = Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
   if (hash !== expected) return false;
   const age = Date.now() - parseInt(timestamp, 10);
   return age < 7 * 24 * 60 * 60 * 1000;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow login page and auth API routes through
@@ -27,7 +40,7 @@ export function middleware(request: NextRequest) {
   // Check for auth cookie with valid token
   const authCookie = request.cookies.get("tax-guide-auth");
 
-  if (!authCookie || !verifyToken(authCookie.value)) {
+  if (!authCookie || !(await verifyToken(authCookie.value))) {
     const loginUrl = new URL("/login", request.url);
     return NextResponse.redirect(loginUrl);
   }

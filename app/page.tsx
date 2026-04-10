@@ -16,9 +16,11 @@ import { TopicsScreen } from "@/components/screens/TopicsScreen";
 import { DetailScreen } from "@/components/screens/DetailScreen";
 import { ActionPlanScreen } from "@/components/screens/ActionPlanScreen";
 import { SavingsScreen } from "@/components/screens/SavingsScreen";
+import { TaxBasicsScreen } from "@/components/screens/TaxBasicsScreen";
 
 type Screen =
   | "welcome"
+  | "tax_basics"
   | "filing"
   | "situations"
   | "financial"
@@ -37,6 +39,7 @@ export default function TaxGuide() {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [completed, setCompleted] = useState<string[]>([]);
   const [activeTopic, setActiveTopic] = useState<string | null>(null);
+  const [unknownTerms, setUnknownTerms] = useState<string[]>([]);
 
   // AI streaming
   const mainStream = useStreaming();
@@ -80,16 +83,25 @@ export default function TaxGuide() {
   const getSystemPrompt = useCallback(
     (topicTitle?: string) => {
       const levelLabel = KNOWLEDGE_LEVELS.find((k) => k.id === level)?.label || level;
+      const isBeginner = level === "beginner" || level === "passive";
       const base = topicTitle
         ? `Tax educator. Filing: ${filingStatus}. Level: ${level}. Topic: ${topicTitle}. 2025 IRS tax year data only. Markdown.`
         : `You are a tax educator for US individual taxpayers. User level: "${levelLabel}". Use 2025 IRS tax year data ONLY. Cite IRS sources. Markdown format. Be accurate.`;
 
-      if (financialContext) {
-        return `${base}\n\nIMPORTANT: Reference the user's specific financial numbers when explaining concepts. Use their actual income, deductions, and tax amounts to make explanations concrete and personal.\n\n${financialContext}`;
+      let prompt = base;
+
+      if (isBeginner && unknownTerms.length > 0) {
+        prompt += `\n\nIMPORTANT: This user is new to taxes and specifically didn't know these terms: ${unknownTerms.join(", ")}. When you use any of these words, briefly define them in parentheses the first time. Use simple analogies. Avoid jargon. Write like you're explaining to a smart friend who has never done taxes before.`;
+      } else if (isBeginner) {
+        prompt += `\n\nIMPORTANT: This user is new to taxes. Use simple language, avoid jargon, and explain any tax terms when you first use them. Write like you're explaining to a smart friend who has never done taxes before.`;
       }
-      return base;
+
+      if (financialContext) {
+        prompt += `\n\nIMPORTANT: Reference the user's specific financial numbers when explaining concepts. Use their actual income, deductions, and tax amounts to make explanations concrete and personal.\n\n${financialContext}`;
+      }
+      return prompt;
     },
-    [level, filingStatus, financialContext]
+    [level, filingStatus, financialContext, unknownTerms]
   );
 
   const handleSelectTopic = useCallback(
@@ -158,8 +170,23 @@ export default function TaxGuide() {
         <WelcomeScreen
           onSelect={(l) => {
             setLevel(l);
+            if (l === "beginner" || l === "passive") {
+              setScreen("tax_basics");
+            } else {
+              setScreen("filing");
+            }
+          }}
+        />
+      )}
+
+      {screen === "tax_basics" && level && (
+        <TaxBasicsScreen
+          level={level}
+          onContinue={(terms) => {
+            setUnknownTerms(terms);
             setScreen("filing");
           }}
+          onBack={() => setScreen("welcome")}
         />
       )}
 
@@ -168,7 +195,7 @@ export default function TaxGuide() {
           selected={filingStatus}
           onSelect={setFilingStatus}
           onContinue={() => setScreen("situations")}
-          onBack={() => setScreen("welcome")}
+          onBack={() => level === "beginner" || level === "passive" ? setScreen("tax_basics") : setScreen("welcome")}
         />
       )}
 

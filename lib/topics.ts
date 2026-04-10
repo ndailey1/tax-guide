@@ -13,7 +13,7 @@ export const FILING_STATUSES: FilingStatus[] = [
   { id: "married_jointly", label: "Married Filing Jointly", desc: "Married, combining income on one return" },
   { id: "married_separately", label: "Married Filing Separately", desc: "Married but filing individual returns" },
   { id: "head_of_household", label: "Head of Household", desc: "Unmarried, pay >50% home costs for qualifying dependent" },
-  { id: "widow", label: "Qualifying Surviving Spouse", desc: "Spouse died in 2023/2024, have dependent child" },
+  { id: "widow", label: "Qualifying Surviving Spouse", desc: "Spouse died in 2024/2025, have dependent child" },
 ];
 
 export const LIFE_SITUATIONS: LifeSituation[] = [
@@ -224,7 +224,7 @@ export function buildTopics(level: string, fs: string, situations: string[]): To
       rows: aboveLine,
     });
   }
-  dedSections.push({ type: "source", text: "Source: IRS Rev. Proc. 2023-34, IRS Publication 501" });
+  dedSections.push({ type: "source", text: "Source: IRS Rev. Proc. 2024-40, IRS Publication 501" });
   topics.push({
     id: "deductions",
     icon: "\u2702\uFE0F",
@@ -356,7 +356,7 @@ export function buildTopics(level: string, fs: string, situations: string[]): To
         ...(s.has("gambling")
           ? [{ type: "info" as const, title: "Gambling", text: "Winnings are taxable income. Losses only deductible up to winnings, and only if you itemize." }]
           : []),
-        { type: "source", text: "Source: IRS Topic 409 \u2014 Capital Gains, IRS Rev. Proc. 2023-34" },
+        { type: "source", text: "Source: IRS Topic 409 \u2014 Capital Gains, IRS Rev. Proc. 2024-40" },
       ],
       aiPrompt: `User has investments. ${beg ? "Explain simply" : "Cover"}: capital gains, short vs long term, 0/15/20% rates, tax-loss harvesting, wash sale rule, crypto, dividends. ${s.has("gambling") ? "And gambling tax rules." : ""}`,
     });
@@ -387,7 +387,7 @@ export function buildTopics(level: string, fs: string, situations: string[]): To
         ...(s.has("retirement_income")
           ? [{ type: "warning" as const, text: "Up to 85% of Social Security may be taxable if combined income > $34,000 (single) or $44,000 (joint)." }]
           : []),
-        { type: "source", text: "Source: IRS Rev. Proc. 2023-34, IRS Publication 590-A" },
+        { type: "source", text: "Source: IRS Rev. Proc. 2024-40, IRS Publication 590-A" },
       ],
       aiPrompt: `Situations: ${situations.join(", ")}. ${beg ? "Explain simply" : "Cover"}: Traditional vs Roth, contribution limits, employer matches, ${s.has("retirement_income") ? "RMDs, SS taxation, early withdrawal penalties" : "tax savings of contributing now"}.`,
     });

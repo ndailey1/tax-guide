@@ -80,7 +80,7 @@ export default function TaxGuide() {
       const levelLabel = KNOWLEDGE_LEVELS.find((k) => k.id === level)?.label || level;
       const base = topicTitle
         ? `Tax educator. Filing: ${filingStatus}. Level: ${level}. Topic: ${topicTitle}. 2025 IRS tax year data only. Markdown.`
-        : `You are a tax educator for US individual taxpayers. User level: "${levelLabel}". Use 2024 IRS tax year data ONLY. Cite IRS sources. Markdown format. Be accurate.`;
+        : `You are a tax educator for US individual taxpayers. User level: "${levelLabel}". Use 2025 IRS tax year data ONLY. Cite IRS sources. Markdown format. Be accurate.`;
 
       if (financialContext) {
         return `${base}\n\nIMPORTANT: Reference the user's specific financial numbers when explaining concepts. Use their actual income, deductions, and tax amounts to make explanations concrete and personal.\n\n${financialContext}`;
@@ -166,6 +166,7 @@ export default function TaxGuide() {
           selected={filingStatus}
           onSelect={setFilingStatus}
           onContinue={() => setScreen("situations")}
+          onBack={() => setScreen("welcome")}
         />
       )}
 
@@ -178,6 +179,7 @@ export default function TaxGuide() {
             )
           }
           onContinue={() => setScreen("financial")}
+          onBack={() => setScreen("filing")}
         />
       )}
 
@@ -187,6 +189,7 @@ export default function TaxGuide() {
           profile={profile}
           onUpdate={handleUpdateProfile}
           onComplete={() => setScreen("analysis")}
+          onBack={() => setScreen("situations")}
         />
       )}
 

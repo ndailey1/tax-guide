@@ -32,14 +32,17 @@ export function useStreaming() {
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let accumulated = "";
+      let buffer = "";
 
       if (reader) {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
 
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split("\n");
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          // Keep the last (possibly incomplete) line in the buffer
+          buffer = lines.pop() ?? "";
 
           for (const line of lines) {
             if (line.startsWith("data: ") && line !== "data: [DONE]") {

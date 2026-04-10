@@ -10,6 +10,7 @@ interface FinancialDetailsScreenProps {
   profile: FinancialProfile;
   onUpdate: (key: string, value: number | null) => void;
   onComplete: () => void;
+  onBack: () => void;
 }
 
 export function FinancialDetailsScreen({
@@ -17,6 +18,7 @@ export function FinancialDetailsScreen({
   profile,
   onUpdate,
   onComplete,
+  onBack: onBackToSituations,
 }: FinancialDetailsScreenProps) {
   const steps = useMemo(
     () => INPUT_STEPS.filter((step) => step.showWhen(situations)),
@@ -45,6 +47,8 @@ export function FinancialDetailsScreen({
     if (currentStep > 0) {
       setExpandedHelp(false);
       setCurrentStep((prev) => prev - 1);
+    } else {
+      onBackToSituations();
     }
   };
 
@@ -98,14 +102,12 @@ export function FinancialDetailsScreen({
       )}
 
       {/* Back button */}
-      {currentStep > 0 && (
-        <button
-          onClick={handleBack}
-          className="bg-transparent border-none text-tax-accent cursor-pointer text-xs font-sans p-0 mb-4"
-        >
-          &larr; Back
-        </button>
-      )}
+      <button
+        onClick={handleBack}
+        className="bg-transparent border-none text-tax-accent cursor-pointer text-xs font-sans p-0 mb-4"
+      >
+        &larr; Back
+      </button>
 
       {/* Question */}
       <div className="mb-6">

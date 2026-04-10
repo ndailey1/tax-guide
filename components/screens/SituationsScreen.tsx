@@ -8,6 +8,7 @@ interface SituationsScreenProps {
   selected: string[];
   onToggle: (id: string) => void;
   onContinue: () => void;
+  onBack: () => void;
 }
 
 const CATEGORIES: Record<string, string> = {
@@ -20,11 +21,18 @@ export function SituationsScreen({
   selected,
   onToggle,
   onContinue,
+  onBack,
 }: SituationsScreenProps) {
   let globalIndex = 0;
 
   return (
     <div className="max-w-[640px] mx-auto animate-screen">
+      <button
+        onClick={onBack}
+        className="bg-transparent border-none text-tax-accent cursor-pointer text-xs font-sans p-0 mb-3"
+      >
+        &larr; Back
+      </button>
       <h2 className="text-[22px] font-extrabold text-tax-text font-serif mb-1">
         What applies to your {TAX_DATA.year} tax year?
       </h2>

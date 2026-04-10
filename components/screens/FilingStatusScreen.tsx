@@ -8,15 +8,23 @@ interface FilingStatusScreenProps {
   selected: string | null;
   onSelect: (status: string) => void;
   onContinue: () => void;
+  onBack: () => void;
 }
 
 export function FilingStatusScreen({
   selected,
   onSelect,
   onContinue,
+  onBack,
 }: FilingStatusScreenProps) {
   return (
     <div className="max-w-[600px] mx-auto animate-screen">
+      <button
+        onClick={onBack}
+        className="bg-transparent border-none text-tax-accent cursor-pointer text-xs font-sans p-0 mb-3"
+      >
+        &larr; Back
+      </button>
       <h2 className="text-[22px] font-extrabold text-tax-text font-serif mb-1">
         Filing Status
       </h2>

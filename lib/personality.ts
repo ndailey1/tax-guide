@@ -102,9 +102,9 @@ export function pickRandom<T>(arr: T[]): T {
 // Get analysis flavor text based on refund/owed amount
 export function getAnalysisFlavor(amount: number, hasWithholding: boolean): string {
   if (!hasWithholding) return pickRandom(SCREEN_FLAVOR.analysis.zero);
+  if (amount === 0) return pickRandom(SCREEN_FLAVOR.analysis.zero);
   if (amount > 1000) return pickRandom(SCREEN_FLAVOR.analysis.refund_big);
   if (amount > 0) return pickRandom(SCREEN_FLAVOR.analysis.refund_small);
   if (amount > -500) return pickRandom(SCREEN_FLAVOR.analysis.owe_small);
-  if (amount <= -500) return pickRandom(SCREEN_FLAVOR.analysis.owe_big);
-  return pickRandom(SCREEN_FLAVOR.analysis.zero);
+  return pickRandom(SCREEN_FLAVOR.analysis.owe_big);
 }

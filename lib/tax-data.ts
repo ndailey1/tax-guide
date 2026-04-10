@@ -40,6 +40,16 @@ export const TAX_DATA = {
       { min: 243700, max: 609350, rate: 0.35 },
       { min: 609350, max: Infinity, rate: 0.37 },
     ],
+    // Qualifying Surviving Spouse uses same brackets as Married Filing Jointly
+    widow: [
+      { min: 0, max: 23200, rate: 0.10 },
+      { min: 23200, max: 94300, rate: 0.12 },
+      { min: 94300, max: 201050, rate: 0.22 },
+      { min: 201050, max: 383900, rate: 0.24 },
+      { min: 383900, max: 487450, rate: 0.32 },
+      { min: 487450, max: 731200, rate: 0.35 },
+      { min: 731200, max: Infinity, rate: 0.37 },
+    ],
   },
   standardDeduction: {
     single: 14600,
@@ -57,6 +67,22 @@ export const TAX_DATA = {
       { min: 518900, max: Infinity, rate: 0.20 },
     ],
     married_jointly: [
+      { min: 0, max: 94050, rate: 0 },
+      { min: 94050, max: 583750, rate: 0.15 },
+      { min: 583750, max: Infinity, rate: 0.20 },
+    ],
+    married_separately: [
+      { min: 0, max: 47025, rate: 0 },
+      { min: 47025, max: 291850, rate: 0.15 },
+      { min: 291850, max: Infinity, rate: 0.20 },
+    ],
+    head_of_household: [
+      { min: 0, max: 63000, rate: 0 },
+      { min: 63000, max: 551350, rate: 0.15 },
+      { min: 551350, max: Infinity, rate: 0.20 },
+    ],
+    // Qualifying Surviving Spouse uses same rates as Married Filing Jointly
+    widow: [
       { min: 0, max: 94050, rate: 0 },
       { min: 94050, max: 583750, rate: 0.15 },
       { min: 583750, max: Infinity, rate: 0.20 },

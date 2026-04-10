@@ -161,8 +161,9 @@ export function calculateTax(
   const studentLoanDeduction = Math.min(v(profile.studentLoanInterest), d.studentLoanMax);
   const hsaDeduction = v(profile.contributionHSA);
   const iraDeduction = Math.min(v(profile.contributionIRA), d.iraMax);
-  const k401kDeduction = Math.min(v(profile.contribution401k), d.k401Limit);
-  const totalAdjustments = halfSETax + studentLoanDeduction + hsaDeduction + iraDeduction + k401kDeduction;
+  // Note: W-2 employee 401(k) contributions are already excluded from Box 1 wages,
+  // so we don't deduct them again here. Only IRA is an above-the-line adjustment.
+  const totalAdjustments = halfSETax + studentLoanDeduction + hsaDeduction + iraDeduction;
 
   const agi = Math.max(0, grossIncome - totalAdjustments);
 

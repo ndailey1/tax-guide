@@ -206,12 +206,12 @@ export function TaxBasicsScreen({
           <div className="text-center mb-6">
             <div className="text-[48px] mb-2 animate-emoji">&#x1F4DA;</div>
             <h1 className="text-[26px] font-extrabold text-tax-text font-serif mb-2">
-              {isBeginner ? "Let\u2019s Start With the Basics" : "Quick Refresher"}
+              {isBeginner ? "Let's Start With the Basics" : "Quick Refresher"}
             </h1>
             <p className="text-[13px] text-tax-muted font-sans max-w-[460px] mx-auto leading-relaxed">
               {isBeginner
-                ? "Before we dive in, let\u2019s make sure we\u2019re on the same page. No judgment \u2014 everyone has to learn this stuff for the first time."
-                : "Let\u2019s make sure we\u2019re speaking the same language before we look at your numbers."}
+                ? "Before we dive in, let's make sure we're on the same page. No judgment — everyone has to learn this stuff for the first time."
+                : "Let's make sure we're speaking the same language before we look at your numbers."}
             </p>
           </div>
 
@@ -233,8 +233,8 @@ export function TaxBasicsScreen({
               <div className="flex flex-col gap-2 ml-1">
                 {[
                   { num: "1", text: "You earn money throughout the year (from a job, freelancing, etc.)" },
-                  { num: "2", text: "If you have a regular job, your employer automatically sends some of your pay to the IRS every paycheck \u2014 this is called \"withholding\"" },
-                  { num: "3", text: `By April 15, ${TAX_DATA.filingYear}, you file a \"tax return\" \u2014 a report that tells the IRS exactly how much you earned and calculates what you actually owe` },
+                  { num: "2", text: "If you have a regular job, your employer automatically sends some of your pay to the IRS every paycheck — this is called \"withholding\"" },
+                  { num: "3", text: `By April 15, ${TAX_DATA.filingYear}, you file a \"tax return\" — a report that tells the IRS exactly how much you earned and calculates what you actually owe` },
                   { num: "4", text: "The IRS compares what you owe vs. what was already paid. If too much was paid \u2192 you get money back (refund). If not enough \u2192 you pay the difference" },
                 ].map((step) => (
                   <div key={step.num} className="flex gap-2.5 items-start">
@@ -262,7 +262,7 @@ export function TaxBasicsScreen({
               </div>
               <div className="flex flex-col gap-2">
                 <p className="text-[12px] text-tax-text font-sans leading-relaxed">
-                  <strong>You can file for FREE.</strong> Don&apos;t pay for TurboTax. Use IRS Free File or Cash App Taxes \u2014 they&apos;re just as good and cost $0.
+                  <strong>You can file for FREE.</strong> Don&apos;t pay for TurboTax. Use IRS Free File or Cash App Taxes — they&apos;re just as good and cost $0.
                 </p>
                 <p className="text-[12px] text-tax-text font-sans leading-relaxed">
                   <strong>If your parents support you,</strong> talk to them before filing. They may claim you as a dependent, which affects both your taxes and theirs.
@@ -278,7 +278,7 @@ export function TaxBasicsScreen({
             onClick={() => setPhase("terms")}
             className="w-full py-3.5 rounded-xl border-none bg-tax-accent text-white text-[14px] font-bold font-sans cursor-pointer btn-press animate-glow"
           >
-            Got It \u2014 Let&apos;s Learn the Terms &rarr;
+            Got It — Let&apos;s Learn the Terms &rarr;
           </button>
         </div>
       )}
@@ -292,7 +292,7 @@ export function TaxBasicsScreen({
               Which of These Terms Are New to You?
             </h2>
             <p className="text-[13px] text-tax-muted font-sans max-w-[440px] mx-auto">
-              Tap any term you don&apos;t fully understand. We&apos;ll break each one down before moving on. No shame \u2014 tax jargon is deliberately confusing.
+              Tap any term you don&apos;t fully understand. We&apos;ll break each one down before moving on. No shame — tax jargon is deliberately confusing.
             </p>
           </div>
 
@@ -312,7 +312,7 @@ export function TaxBasicsScreen({
             <p className="text-[11px] text-tax-dim font-sans italic">
               {unknownTerms.size === 0
                 ? "Know them all? Impressive. Hit continue."
-                : `${unknownTerms.size} term${unknownTerms.size === 1 ? "" : "s"} selected \u2014 we\u2019ll explain ${unknownTerms.size === 1 ? "it" : "each one"}`}
+                : `${unknownTerms.size} term${unknownTerms.size === 1 ? "" : "s"} selected — we'll explain ${unknownTerms.size === 1 ? "it" : "each one"}`}
             </p>
           </div>
 
@@ -326,7 +326,7 @@ export function TaxBasicsScreen({
             }}
             className="w-full py-3.5 rounded-xl border-none bg-tax-accent text-white text-[14px] font-bold font-sans cursor-pointer btn-press animate-glow"
           >
-            {unknownTerms.size > 0 ? `Explain These ${unknownTerms.size} Terms` : "I Know These \u2014 Continue"} &rarr;
+            {unknownTerms.size > 0 ? `Explain These ${unknownTerms.size} Terms` : "I Know These — Continue"} &rarr;
           </button>
         </div>
       )}
@@ -376,7 +376,7 @@ export function TaxBasicsScreen({
               Quick Knowledge Check
             </h2>
             <p className="text-[13px] text-tax-muted font-sans max-w-[440px] mx-auto">
-              This helps us tailor everything to what you already know. Be honest \u2014 there are no wrong answers.
+              This helps us tailor everything to what you already know. Be honest — there are no wrong answers.
             </p>
           </div>
 
@@ -426,8 +426,8 @@ export function TaxBasicsScreen({
               {questionsKnew >= questionsAnswered * 0.7
                 ? "You Know More Than You Think!"
                 : questionsKnew >= questionsAnswered * 0.4
-                  ? "Great Start \u2014 We\u2019ll Fill in the Gaps"
-                  : "No Worries \u2014 That\u2019s Why We\u2019re Here"}
+                  ? "Great Start — We'll Fill in the Gaps"
+                  : "No Worries — That's Why We're Here"}
             </h2>
             <p className="text-[13px] text-tax-muted font-sans max-w-[460px] mx-auto leading-relaxed">
               {questionsKnew >= questionsAnswered * 0.7

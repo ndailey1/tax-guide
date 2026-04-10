@@ -243,7 +243,7 @@ export function AnalysisScreen({
       {calc.totalAdjustments > 0 && (
         <Section title="Extra Reductions You Automatically Get" emoji="&#x2B06;">
           <p className="text-xs text-tax-muted font-sans mb-2">
-            These reduce your income before anything else. You get these automatically \u2014 no special filing needed.
+            These reduce your income before anything else. You get these automatically &mdash; no special filing needed.
           </p>
           {calc.halfSETax > 0 && (
             <Row label="Half of self-employment tax" value={`-${fmtD(Math.round(calc.halfSETax))}`} indent highlight="green" />
@@ -374,7 +374,7 @@ export function AnalysisScreen({
         <p className="text-xs text-tax-text font-sans leading-relaxed">
           <strong className="text-tax-orange">This is an estimate.</strong> Actual amounts
           may differ based on state taxes, additional credits, phaseouts, and other factors.
-          This guide is for educational purposes \u2014 consult a tax professional for filing decisions.
+          This guide is for educational purposes &mdash; consult a tax professional for filing decisions.
         </p>
       </div>
 

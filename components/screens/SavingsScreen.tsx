@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { FinancialProfile } from "@/lib/financial-profile";
 import { calculateTax } from "@/lib/financial-profile";
 import { findSavings, type SavingsOpportunity } from "@/lib/savings-finder";
+import { buildStrategies, type TaxStrategy } from "@/lib/tax-strategies";
 import { fmtD } from "@/lib/tax-data";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 
@@ -154,6 +155,134 @@ function OpportunityCard({
   );
 }
 
+function StrategyCard({
+  strategy,
+  isExpanded,
+  onToggle,
+  index,
+}: {
+  strategy: TaxStrategy;
+  isExpanded: boolean;
+  onToggle: () => void;
+  index: number;
+}) {
+  return (
+    <div className={`mb-3 animate-card delay-${Math.min(index, 12)}`}>
+      {/* Header */}
+      <div
+        onClick={onToggle}
+        className="flex items-center gap-3 p-4 rounded-xl border border-purple-500/20 bg-tax-surface cursor-pointer btn-press hover:border-purple-500/40 transition-all"
+      >
+        <span className="text-[24px] flex-shrink-0">{strategy.icon}</span>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-[14px] font-bold text-tax-text font-sans">
+            {strategy.title}
+          </h3>
+          <p className="text-[12px] text-tax-muted font-sans leading-snug mt-0.5 line-clamp-2">
+            {strategy.tagline}
+          </p>
+        </div>
+        <div className="flex flex-col items-end flex-shrink-0 ml-2">
+          <span className="text-[9px] font-bold uppercase tracking-wider font-mono px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">
+            Pro Strategy
+          </span>
+        </div>
+        <span
+          className={`text-tax-muted text-sm transition-transform duration-200 ml-1 ${
+            isExpanded ? "rotate-90" : ""
+          }`}
+        >
+          &#x25B6;
+        </span>
+      </div>
+
+      {/* Expanded detail */}
+      {isExpanded && (
+        <div className="ml-4 mr-1 mt-2 animate-screen">
+          {/* How it works */}
+          <div className="bg-tax-surface-alt border border-tax-border rounded-xl p-4 mb-3">
+            <div className="text-[10px] font-bold text-purple-400 uppercase tracking-wider mb-2 font-mono">
+              How it works
+            </div>
+            <p className="text-[13px] text-tax-text font-sans leading-relaxed">
+              {strategy.howItWorks}
+            </p>
+
+            {/* Example callout */}
+            <div className="mt-3 px-3.5 py-2.5 rounded-lg bg-purple-500/10 border border-purple-500/20">
+              <div className="text-[10px] font-bold text-purple-400 uppercase tracking-wider mb-1 font-mono">
+                Example with your numbers
+              </div>
+              <p className="text-[13px] text-tax-text font-sans leading-relaxed">
+                {strategy.example}
+              </p>
+            </div>
+
+            {/* Savings range */}
+            <div className="mt-3 flex items-center gap-2">
+              <span className="text-[10px] font-bold text-tax-green font-mono bg-tax-green-dim px-2 py-1 rounded">
+                Potential savings: {strategy.savingsRange}
+              </span>
+            </div>
+          </div>
+
+          {/* Who qualifies */}
+          <div className="bg-tax-accent-dim border border-tax-accent/20 rounded-lg px-3.5 py-2.5 mb-3">
+            <div className="text-[10px] font-bold text-tax-accent uppercase tracking-wider mb-1 font-mono">
+              Who qualifies
+            </div>
+            <p className="text-[12px] text-tax-text font-sans leading-relaxed">
+              {strategy.whoQualifies}
+            </p>
+          </div>
+
+          {/* Steps */}
+          <div className="bg-tax-surface border border-tax-border rounded-xl p-4 mb-3">
+            <div className="text-[10px] font-bold text-tax-accent uppercase tracking-wider mb-2.5 font-mono">
+              How to do this
+            </div>
+            <div className="flex flex-col gap-2.5">
+              {strategy.steps.map((step, j) => (
+                <div key={j} className="flex gap-2.5 items-start">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full border-[1.5px] border-tax-border flex items-center justify-center mt-0.5">
+                    <span className="text-[9px] text-tax-muted font-mono">{j + 1}</span>
+                  </div>
+                  <p className="text-[13px] text-tax-text font-sans leading-relaxed">
+                    {step}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Pro tip */}
+          {strategy.proTip && (
+            <div className="bg-tax-green-dim border border-tax-green/20 rounded-lg px-3.5 py-2.5 mb-3">
+              <p className="text-[12px] text-tax-text font-sans leading-relaxed">
+                <strong className="text-tax-green">&#x1F4A1; Pro tip:</strong> {strategy.proTip}
+              </p>
+            </div>
+          )}
+
+          {/* Warning */}
+          {strategy.warning && (
+            <div className="bg-tax-orange-dim border border-tax-orange/20 rounded-lg px-3.5 py-2.5 mb-3">
+              <p className="text-[12px] text-tax-text font-sans leading-relaxed">
+                <strong className="text-tax-orange">&#x26A0;&#xFE0F; Watch out:</strong> {strategy.warning}
+              </p>
+            </div>
+          )}
+
+          {/* IRS source */}
+          <div className="text-[10px] text-tax-dim font-mono italic mb-2">
+            {strategy.irsRule}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function SavingsScreen({
   profile,
   filingStatus,
@@ -168,6 +297,11 @@ export function SavingsScreen({
 
   const result = useMemo(
     () => findSavings(profile, filingStatus, situations, calc),
+    [profile, filingStatus, situations, calc]
+  );
+
+  const strategies = useMemo(
+    () => buildStrategies(profile, filingStatus, situations, calc),
     [profile, filingStatus, situations, calc]
   );
 
@@ -314,13 +448,40 @@ export function SavingsScreen({
         </div>
       )}
 
+      {/* Pro Tax Strategies */}
+      {strategies.length > 0 && (
+        <div className="mb-5">
+          <div className="border-t border-tax-border pt-6 mt-2 mb-4">
+            <div className="text-center mb-4">
+              <div className="text-[32px] mb-1">&#x1F9E0;</div>
+              <h2 className="text-[20px] font-extrabold text-tax-text font-serif mb-1">
+                Pro Tax Strategies
+              </h2>
+              <p className="text-[13px] text-tax-muted font-sans max-w-[480px] mx-auto">
+                Aggressive but completely legal moves personalized to your situation.
+                These are the strategies wealthy people use — now you know them too.
+              </p>
+            </div>
+          </div>
+          {strategies.map((strategy, i) => (
+            <StrategyCard
+              key={strategy.id}
+              strategy={strategy}
+              isExpanded={expanded.has(strategy.id)}
+              onToggle={() => toggleExpand(strategy.id)}
+              index={i}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Disclaimer */}
       <div className="bg-tax-surface border border-tax-border rounded-xl p-4 mb-4">
         <p className="text-[12px] text-tax-muted font-sans leading-relaxed">
           <strong className="text-tax-text">These are estimates, not guarantees.</strong> Exact
           savings depend on your complete financial picture, eligibility requirements, and
           income phase-outs not fully captured here. Consult a tax professional before making
-          major financial decisions.
+          major financial decisions. All strategies listed are legal under current IRS rules.
         </p>
       </div>
 

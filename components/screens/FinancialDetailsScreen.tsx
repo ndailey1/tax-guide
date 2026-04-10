@@ -29,7 +29,37 @@ export function FinancialDetailsScreen({
   const [expandedHelp, setExpandedHelp] = useState(false);
 
   const step = steps[currentStep];
-  if (!step) return null;
+  if (!step) {
+    // No applicable questions — go straight to analysis
+    if (steps.length === 0) {
+      return (
+        <div className="max-w-[560px] mx-auto animate-screen text-center py-12">
+          <div className="text-[48px] mb-3">&#x2705;</div>
+          <h2 className="text-[20px] font-extrabold text-tax-text font-serif mb-2">
+            No Financial Questions Needed
+          </h2>
+          <p className="text-[13px] text-tax-muted font-sans mb-6">
+            Based on your selected situations, we don&apos;t need additional financial details.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={onBackToSituations}
+              className="flex-1 py-3.5 rounded-xl border border-tax-border bg-transparent text-tax-muted text-[14px] font-semibold font-sans cursor-pointer btn-press"
+            >
+              &larr; Change Situations
+            </button>
+            <button
+              onClick={onComplete}
+              className="flex-1 py-3.5 rounded-xl border-none bg-tax-accent text-white text-[14px] font-bold font-sans cursor-pointer btn-press"
+            >
+              See My Tax Analysis &rarr;
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
 
   const isLast = currentStep === steps.length - 1;
   const progress = ((currentStep + 1) / steps.length) * 100;

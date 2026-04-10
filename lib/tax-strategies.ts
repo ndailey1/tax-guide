@@ -339,7 +339,7 @@ export function buildStrategies(
   }
 
   // Medical expense bunching
-  if (s.has("medical") && v(profile.medicalExpenses) > 0) {
+  if (s.has("medical") && v(profile.medicalExpenses) > 0 && calc.agi > 0) {
     const threshold = Math.round(calc.agi * 0.075);
     const currentMedical = v(profile.medicalExpenses);
     const gap = threshold - currentMedical;

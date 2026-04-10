@@ -65,7 +65,11 @@ export function useStreaming() {
       }
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
-      setContent("Could not load explanation. Review the IRS data tables above.");
+      const message =
+        err instanceof TypeError
+          ? "Network error \u2014 check your internet connection and try again."
+          : "Could not load explanation. Review the IRS data tables above.";
+      setContent(message);
     }
 
     setLoading(false);

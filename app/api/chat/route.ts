@@ -1,10 +1,21 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { cookies } from "next/headers";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 export async function POST(req: Request) {
+  // Auth check — prevent unauthenticated API usage
+  const cookieStore = await cookies();
+  const authCookie = cookieStore.get("tax-guide-auth");
+  if (!authCookie?.value) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const { system, prompt } = await req.json();
 
   if (!system?.trim() || !prompt?.trim() || system.length > 10000 || prompt.length > 50000) {

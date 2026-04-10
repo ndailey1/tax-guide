@@ -44,7 +44,7 @@ export function ProfileScreen({ profile, onComplete }: ProfileScreenProps) {
       isFirstTimeFiler: isFirstTime,
       employmentType: employment,
       state: finalState,
-      persona: "", // derived later in page.tsx
+      persona: "general", // refined after knowledge level selection
     });
   };
 

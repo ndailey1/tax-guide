@@ -172,7 +172,7 @@ export function buildTopics(level: string, fs: string, situations: string[]): To
       {
         type: "info",
         title: "Progressive System",
-        text: `You DON'T pay ${pct(brackets[brackets.length - 1].rate)} on everything. Each bracket only applies to income in that range. At $55,000 single: 10% on first $11,600 + 12% on next $35,550 + 22% on remaining $7,850 = ~$6,768 total (effective rate ~12.3%).`,
+        text: `You DON'T pay ${pct(brackets[brackets.length - 1].rate)} on everything. Each bracket only applies to income in that range. At $55,000 single: 10% on first $11,925 + 12% on next $36,550 + 22% on remaining $6,525 = ~$6,927 total (effective rate ~12.6%).`,
       },
       { type: "source", text: "Source: IRS Revenue Procedure 2023-34" },
     ],
@@ -433,7 +433,7 @@ export function buildTopics(level: string, fs: string, situations: string[]): To
   if (s.has("parent")) {
     warnings.push({
       type: "warning",
-      text: "Wrong filing status: Many single parents file 'Single' when 'Head of Household' gives a $21,900 standard deduction vs $14,600 and better brackets.",
+      text: `Wrong filing status: Many single parents file 'Single' when 'Head of Household' gives a ${fmtD(TAX_DATA.standardDeduction.head_of_household)} standard deduction vs ${fmtD(TAX_DATA.standardDeduction.single)} and better brackets.`,
     });
   }
   warnings.push({

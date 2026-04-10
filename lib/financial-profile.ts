@@ -37,6 +37,9 @@ export interface FinancialProfile {
   businessExpenses: number | null;
   homeOfficeSquareFeet: number | null;
   businessMiles: number | null;
+
+  // Estimated tax payments already made
+  estimatedTaxPayments: number | null;
 }
 
 export function emptyProfile(): FinancialProfile {
@@ -68,6 +71,7 @@ export function emptyProfile(): FinancialProfile {
     businessExpenses: null,
     homeOfficeSquareFeet: null,
     businessMiles: null,
+    estimatedTaxPayments: null,
   };
 }
 
@@ -258,7 +262,7 @@ export function calculateTax(
   const taxAfterCredits = Math.max(0, totalTax - totalCredits);
   const effectiveRate = grossIncome > 0 ? taxAfterCredits / grossIncome : 0;
 
-  const totalWithholding = v(profile.w2Withholding);
+  const totalWithholding = v(profile.w2Withholding) + v(profile.estimatedTaxPayments);
   const estimatedRefundOrOwed = totalWithholding - taxAfterCredits;
 
   return {

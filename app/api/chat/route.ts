@@ -7,8 +7,8 @@ const anthropic = new Anthropic({
 export async function POST(req: Request) {
   const { system, prompt } = await req.json();
 
-  if (!system || !prompt) {
-    return new Response(JSON.stringify({ error: "Missing system or prompt" }), {
+  if (!system?.trim() || !prompt?.trim() || system.length > 10000 || prompt.length > 50000) {
+    return new Response(JSON.stringify({ error: "Missing or invalid input" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });

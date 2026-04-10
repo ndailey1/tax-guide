@@ -144,8 +144,8 @@ export const INPUT_STEPS: InputStep[] = [
       dontHave: "Check your brokerage app's \"Activity\" or \"History\" section. Look for realized gains/losses for the year. If you used multiple platforms, check each one.",
     },
     fields: [
-      { key: "investmentIncomeLTCG", label: "Long-term gains (held over 1 year)", placeholder: "3,000", type: "dollar" },
-      { key: "investmentIncomeSTCG", label: "Short-term gains (held under 1 year)", placeholder: "1,500", type: "dollar" },
+      { key: "investmentIncomeLTCG", label: "Long-term gains or losses (held over 1 year)", placeholder: "3,000", type: "dollar" },
+      { key: "investmentIncomeSTCG", label: "Short-term gains or losses (held under 1 year)", placeholder: "1,500", type: "dollar" },
       { key: "dividendIncome", label: "Dividends received", placeholder: "500", type: "dollar" },
       { key: "interestIncome", label: "Interest earned (savings, bonds)", placeholder: "200", type: "dollar" },
     ],
@@ -381,6 +381,25 @@ export const INPUT_STEPS: InputStep[] = [
       { key: "contributionHSA", label: "HSA contributions (your own, not employer's)", placeholder: "2,000", type: "dollar" },
     ],
     showWhen: (s) => s.includes("hsa"),
+  },
+
+  // --- Estimated tax payments ---
+  {
+    id: "estimated_tax_payments",
+    question: "Did you make any estimated tax payments to the IRS this year?",
+    subtext: "If you're self-employed and sent quarterly payments to the IRS throughout the year, enter the total amount. This is money you've already paid toward your tax bill.",
+    emoji: "\uD83D\uDCE8",
+    help: {
+      quickAnswer: "Add up all IRS payments you made via irs.gov/payments, EFTPS, or Form 1040-ES vouchers.",
+      what: "Estimated tax payments are quarterly payments self-employed people make to the IRS throughout the year (since no employer is withholding taxes for them). If you made payments in April, June, September, or January, add them all up.",
+      where: "Check your bank statements for payments to 'IRS' or 'United States Treasury.' If you used EFTPS.gov or IRS Direct Pay, log in to see your payment history.",
+      howToGet: "Log into irs.gov/payments and click 'View Your Account' to see all payments made. Or search your bank statements for debits to the IRS.",
+      dontHave: "If you didn't make any quarterly payments, enter $0 or skip this. If you're not sure whether you made payments, check your bank statements for the quarterly due dates (April 15, June 15, Sept 15, Jan 15).",
+    },
+    fields: [
+      { key: "estimatedTaxPayments", label: "Total estimated tax payments made this year", placeholder: "4,000", type: "dollar" },
+    ],
+    showWhen: (s) => s.includes("self_employed") || s.includes("side_hustle"),
   },
 
   // --- Home office ---

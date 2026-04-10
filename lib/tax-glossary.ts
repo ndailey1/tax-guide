@@ -34,7 +34,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     short: "Tax on money you earned",
     category: "basics",
     explanation: "Income tax is a tax specifically on the money you earned — from a job, freelancing, or other sources. The more you earn, the higher percentage you pay, but only on the money ABOVE certain levels (these are called 'brackets'). Not all of your income is taxed — there's a chunk that's completely tax-free (the 'standard deduction').",
-    example: "You earned $30,000 but the first $14,600 is tax-free. So you only pay tax on $15,400.",
+    example: "You earned $30,000 but the first $15,000 is tax-free. So you only pay tax on $15,000.",
   },
   {
     id: "w2",
@@ -96,8 +96,8 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     emoji: "\u2702\uFE0F",
     short: "Lowers the income you're taxed on",
     category: "deductions",
-    explanation: "A deduction is an amount subtracted from your income BEFORE tax is calculated. It reduces the amount of income that gets taxed — not the tax itself. Everyone gets a 'standard deduction' automatically ($14,600 if single in 2025). This means if you earned $30,000, you only pay tax on $15,400. Deductions basically make part of your income invisible to the IRS.",
-    example: "Income: $30,000. Standard deduction: $14,600. Taxable income: $15,400. You only pay tax on $15,400.",
+    explanation: "A deduction is an amount subtracted from your income BEFORE tax is calculated. It reduces the amount of income that gets taxed — not the tax itself. Everyone gets a 'standard deduction' automatically ($15,000 if single in 2025). This means if you earned $30,000, you only pay tax on $15,000. Deductions basically make part of your income invisible to the IRS.",
+    example: "Income: $30,000. Standard deduction: $15,000. Taxable income: $15,000. You only pay tax on $15,000.",
   },
   {
     id: "credit",
@@ -124,7 +124,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     short: "How you classify yourself to the IRS",
     category: "filing",
     explanation: "Your filing status tells the IRS whether you're single, married, or a single parent supporting a family. It matters because different statuses get different standard deductions and tax brackets. Most young people file as 'Single.' If you're a single parent, 'Head of Household' saves you more money. The IRS determines your status based on your situation on December 31st of the tax year.",
-    example: "Single: $14,600 standard deduction. Head of Household: $21,900. That's $7,300 more income that's tax-free.",
+    example: "Single: $15,000 standard deduction. Head of Household: $22,500. That's $7,500 more income that's tax-free.",
   },
   {
     id: "bracket",
@@ -133,7 +133,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     short: "The rate you pay at different income levels",
     category: "basics",
     explanation: "Tax brackets are ranges of income taxed at different rates. Here's the key thing everyone gets wrong: if you're 'in the 22% bracket,' you DON'T pay 22% on everything. You pay 10% on the first chunk, 12% on the next chunk, and 22% only on the amount above the 12% bracket. It's like climbing stairs — each step has its own rate, not the whole staircase.",
-    example: "On $40,000 (single): First $14,600 = tax-free. Next $11,600 at 10% = $1,160. Next $13,800 at 12% = $1,656. Total: $2,816 (about 7% effective rate — not 12%).",
+    example: "On $40,000 (single): First $15,000 = tax-free. Taxable: $25,000. First $11,925 at 10% = $1,193. Next $13,075 at 12% = $1,569. Total tax: $2,762 (about 6.9% effective rate — not 12%).",
   },
   {
     id: "agi",
@@ -150,8 +150,8 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     emoji: "\uD83D\uDEE1\uFE0F",
     short: "A guaranteed tax-free amount everyone gets",
     category: "deductions",
-    explanation: "The standard deduction is a set amount of income that's automatically tax-free for everyone. For 2025, it's $14,600 if you're single. You don't have to do anything to get it — it's automatic. The only reason you'd skip it is if your 'itemized deductions' (mortgage interest, huge medical bills, etc.) add up to more than $14,600, which is rare for young people.",
-    example: "You earned $25,000. The $14,600 standard deduction means you only pay tax on $10,400. The first $14,600 is yours, tax-free.",
+    explanation: "The standard deduction is a set amount of income that's automatically tax-free for everyone. For 2025, it's $15,000 if you're single. You don't have to do anything to get it — it's automatic. The only reason you'd skip it is if your 'itemized deductions' (mortgage interest, huge medical bills, etc.) add up to more than $15,000, which is rare for young people.",
+    example: "You earned $25,000. The $15,000 standard deduction means you only pay tax on $10,000. The first $15,000 is yours, tax-free.",
   },
   {
     id: "irs",
@@ -184,7 +184,7 @@ export const COMPREHENSION_QUESTIONS: ComprehensionQuestion[] = [
     question: "Do you know whether you're actually REQUIRED to file a tax return this year?",
     yesText: "Yes, I know the filing requirements",
     noText: "I'm not sure — I thought everyone has to file",
-    explanation: "You're required to file if your income exceeds certain thresholds ($14,600 for single filers in 2025). BUT — even if you earned less, you should STILL file if your employer withheld taxes, because filing is the only way to get that money back as a refund. Many young people skip filing and leave hundreds of dollars on the table.",
+    explanation: "You're required to file if your gross income exceeds certain thresholds ($15,000 for single filers in 2025). BUT — even if you earned less, you should STILL file if your employer withheld taxes, because filing is the only way to get that money back as a refund. Many young people skip filing and leave hundreds of dollars on the table.",
   },
   {
     id: "documents_needed",

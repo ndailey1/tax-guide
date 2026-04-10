@@ -15,6 +15,7 @@ import { AnalysisScreen } from "@/components/screens/AnalysisScreen";
 import { TopicsScreen } from "@/components/screens/TopicsScreen";
 import { DetailScreen } from "@/components/screens/DetailScreen";
 import { ActionPlanScreen } from "@/components/screens/ActionPlanScreen";
+import { SavingsScreen } from "@/components/screens/SavingsScreen";
 
 type Screen =
   | "welcome"
@@ -22,6 +23,7 @@ type Screen =
   | "situations"
   | "financial"
   | "analysis"
+  | "savings"
   | "topics"
   | "detail"
   | "action_plan";
@@ -197,8 +199,18 @@ export default function TaxGuide() {
         <AnalysisScreen
           profile={profile}
           filingStatus={filingStatus}
-          onContinueToGuide={() => setScreen("action_plan")}
+          onContinueToGuide={() => setScreen("savings")}
           onBack={() => setScreen("financial")}
+        />
+      )}
+
+      {screen === "savings" && filingStatus && (
+        <SavingsScreen
+          profile={profile}
+          filingStatus={filingStatus}
+          situations={situations}
+          onContinue={() => setScreen("action_plan")}
+          onBack={() => setScreen("analysis")}
         />
       )}
 
@@ -214,7 +226,7 @@ export default function TaxGuide() {
             }
             setScreen("topics");
           }}
-          onBack={() => setScreen("analysis")}
+          onBack={() => setScreen("savings")}
         />
       )}
 

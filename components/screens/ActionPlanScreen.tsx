@@ -343,7 +343,7 @@ export function ActionPlanScreen({
         onClick={onBack}
         className="bg-transparent border-none text-tax-accent cursor-pointer text-xs font-sans p-0 mb-3"
       >
-        &larr; Back to Tax Estimate
+        &larr; Back to Savings
       </button>
       <Confetti active={allDone} />
 

@@ -12,6 +12,7 @@ interface AnalysisScreenProps {
   profile: FinancialProfile;
   filingStatus: string;
   onContinueToGuide: () => void;
+  onBack: () => void;
 }
 
 function Section({
@@ -131,6 +132,7 @@ export function AnalysisScreen({
   profile,
   filingStatus,
   onContinueToGuide,
+  onBack,
 }: AnalysisScreenProps) {
   const calc = useMemo(
     () => calculateTax(profile, filingStatus),
@@ -150,6 +152,12 @@ export function AnalysisScreen({
 
   return (
     <div className="max-w-[600px] mx-auto animate-screen-up">
+      <button
+        onClick={onBack}
+        className="bg-transparent border-none text-tax-accent cursor-pointer text-xs font-sans p-0 mb-3"
+      >
+        &larr; Back to Questions
+      </button>
       <Confetti active={showConfetti} />
 
       {/* Hero result */}

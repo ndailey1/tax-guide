@@ -13,6 +13,7 @@ interface ActionPlanScreenProps {
   situations: string[];
   level: string;
   onLearnMore: () => void;
+  onBack: () => void;
 }
 
 interface Step {
@@ -287,6 +288,7 @@ export function ActionPlanScreen({
   situations,
   level,
   onLearnMore,
+  onBack,
 }: ActionPlanScreenProps) {
   const steps = useMemo(
     () => buildSteps(profile, filingStatus, situations, level),
@@ -337,6 +339,12 @@ export function ActionPlanScreen({
 
   return (
     <div className="max-w-[640px] mx-auto animate-screen-up">
+      <button
+        onClick={onBack}
+        className="bg-transparent border-none text-tax-accent cursor-pointer text-xs font-sans p-0 mb-3"
+      >
+        &larr; Back to Tax Estimate
+      </button>
       <Confetti active={allDone} />
 
       {/* Header */}

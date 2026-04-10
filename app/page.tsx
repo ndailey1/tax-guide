@@ -198,6 +198,7 @@ export default function TaxGuide() {
           profile={profile}
           filingStatus={filingStatus}
           onContinueToGuide={() => setScreen("action_plan")}
+          onBack={() => setScreen("financial")}
         />
       )}
 
@@ -213,6 +214,7 @@ export default function TaxGuide() {
             }
             setScreen("topics");
           }}
+          onBack={() => setScreen("analysis")}
         />
       )}
 
